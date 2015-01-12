@@ -8,7 +8,20 @@ block content
     div.row
       div.col-xs-3.text-center
         h2.row Input
-        div.row.btn-group(data-toggle="buttons")
+        div.row
+          div.col-xs-4#inputBox1
+          div.col-xs-4#inputBox2
+          div.col-xs-4#inputBox3
+        div.row
+          div.col-xs-4#inputBox4
+          div.col-xs-4#inputBox5
+          div.col-xs-4#inputBox6
+        div.row
+          div.col-xs-4#inputBox7
+          div.col-xs-4#inputBox8
+          div.col-xs-4#inputBox9
+        br
+        div#inputRadioButtons.row.btn-group(data-toggle="buttons")
           label.btn.btn-default.active Easy
             input(type="radio", name="options", id="easyProblem", autocomplete="off", checked)
           label.btn.btn-default Medium
@@ -55,5 +68,5 @@ block content
     br
     div.row
       div.col-xs-12
-        div.well#output Ipsum Lorem
+        div.well#output
 

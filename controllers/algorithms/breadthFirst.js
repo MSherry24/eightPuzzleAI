@@ -12,13 +12,15 @@ var solutionTree = {};
  * @type {{upChild: string, downChild: string, leftChild: string, rightChild: string, parent: string, zeroIndex: string}}
  */
 var queue = [];
+var nodesCreated;
+var nodesExamined;
 /*
  *  queue stores the puzzle states yet to be examined for breadth first search
  */
 
 var addToSolutionTree = function (nodeToAdd, currentNode) {
     "use strict";
-  console.log('addToSolutionTree 1');
+    console.log('addToSolutionTree');
     solutionTree[nodeToAdd.nodeKey] = { upChild: '', leftChild: '',
         downChild: '', rightChild: '',
         parent: currentNode, zeroIndex: nodeToAdd.zeroIndex
@@ -31,20 +33,22 @@ var addToQueue =  function (nextNodes, currentNode) {
     if (nextNodes.upChild !== undefined && solutionTree[nextNodes.upChild.nodeKey] === undefined) {
         queue.push(nextNodes.upChild.nodeKey);
         addToSolutionTree(nextNodes.upChild, currentNode);
+        nodesCreated++;
     }
     if (nextNodes.leftChild !== undefined && solutionTree[nextNodes.leftChild.nodeKey] === undefined) {
         queue.push(nextNodes.leftChild.nodeKey);
         addToSolutionTree(nextNodes.leftChild, currentNode);
+        nodesCreated++;
     }
-    console.log('addToQueue 16');
     if (nextNodes.downChild !== undefined && solutionTree[nextNodes.downChild.nodeKey] === undefined) {
         queue.push(nextNodes.downChild.nodeKey);
         addToSolutionTree(nextNodes.downChild, currentNode);
+        nodesCreated++;
     }
-    console.log('addToQueue 17');
     if (nextNodes.rightChild !== undefined && solutionTree[nextNodes.rightChild.nodeKey] === undefined) {
         queue.push(nextNodes.rightChild.nodeKey);
         addToSolutionTree(nextNodes.rightChild, currentNode);
+        nodesCreated++;
     }
 };
 
@@ -55,9 +59,13 @@ var runBreadthFirstSearch = function (solution) {
     currentNode = queue.shift();
     while (currentNode !== solution) {
         nextNodes = search.getNextNodes(solutionTree[currentNode].zeroIndex, currentNode);
-        solutionTree[currentNode] = nextNodes.currentNode;
+        solutionTree[currentNode].leftChild = nextNodes.currentNode.leftChild;
+        solutionTree[currentNode].upChild = nextNodes.currentNode.upChild;
+        solutionTree[currentNode].rightChild = nextNodes.currentNode.rightChild;
+        solutionTree[currentNode].downChild = nextNodes.currentNode.downChild;
         addToQueue(nextNodes, currentNode);
         currentNode = queue.shift();
+        nodesExamined++;
     }
     console.log("solution = " + currentNode);
     return currentNode;
@@ -66,14 +74,23 @@ var runBreadthFirstSearch = function (solution) {
 exports.run = function (inputObjectIndex, solution) {
     console.log('run breadth first search');
     console.log('input = ' + inputObjectIndex);
-    console.log('solution = ' + solution);
+    var solutionNode, results;
     solutionTree = {};
     queue = [];
+    nodesCreated = 1;
+    nodesExamined = 1;
+    results = {solutionPath: [] };
     solutionTree[inputObjectIndex] = { upChild: '', downChild: '', leftChild: '',
         rightChild: '', zeroIndex: '', parent: ''};
     solutionTree[inputObjectIndex].zeroIndex = search.getFirstZeroIndex(inputObjectIndex);
     queue.push(inputObjectIndex);
-    runBreadthFirstSearch(solution);
+    solutionNode = runBreadthFirstSearch(solution);
+    results.solutionPath = search.getSolutionPath(solutionNode, solutionTree);
+    results.solutionTree = solutionTree;
+    results.nodesCreated = nodesCreated;
+    results.nodesExamined = nodesExamined;
+    return results;
+
 };
 /* exports.run is the driver for breadth first search.  It can be called from another file and takes stringified
  * JSON representations of the puzzle board and the solution as an input.

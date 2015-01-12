@@ -83,3 +83,16 @@ exports.getNextNodes = function (zeroIndex, currentNode) {
     nextNodes.currentNode = currentNode;
     return nextNodes;
 };
+
+exports.getSolutionPath = function(solutionNode, solutionTree) {
+    var solutionPath, currentNode;
+    console.log('getSolutionPath');
+    solutionPath = [];
+    currentNode = solutionNode;
+    solutionPath.push(solutionNode);
+    while (solutionTree[currentNode].parent !== '') {
+        currentNode = solutionTree[currentNode].parent;
+        solutionPath.push(currentNode);
+    };
+    return solutionPath;
+};
