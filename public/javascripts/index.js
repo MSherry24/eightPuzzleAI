@@ -6,15 +6,15 @@ var states, currentState, runNumber;
 var setState = function () {
     "use strict";
     if (currentState !== null) {
-        $('#stateBox1').html(input._1);
-        $('#stateBox2').html(input._2);
-        $('#stateBox3').html(input._3);
-        $('#stateBox4').html(input._4);
-        $('#stateBox5').html(input._5);
-        $('#stateBox6').html(input._6);
-        $('#stateBox7').html(input._7);
-        $('#stateBox8').html(input._8);
-        $('#stateBox9').html(input._9);
+        $('#stateBox1').html(states[currentState]._1);
+        $('#stateBox2').html(states[currentState]._2);
+        $('#stateBox3').html(states[currentState]._3);
+        $('#stateBox4').html(states[currentState]._4);
+        $('#stateBox5').html(states[currentState]._5);
+        $('#stateBox6').html(states[currentState]._6);
+        $('#stateBox7').html(states[currentState]._7);
+        $('#stateBox8').html(states[currentState]._8);
+        $('#stateBox9').html(states[currentState]._9);
     }
 };
 
