@@ -57,7 +57,7 @@ var runBreadthFirstSearch = function (solution) {
     var currentNode, nextNodes;
     console.log('runBreadthFirstSearch starting');
     currentNode = queue.shift();
-    while (currentNode !== solution) {
+    while (currentNode !== solution && currentNode !== undefined) {
         nextNodes = search.getNextNodes(solutionTree[currentNode].zeroIndex, currentNode);
         solutionTree[currentNode].leftChild = nextNodes.currentNode.leftChild;
         solutionTree[currentNode].upChild = nextNodes.currentNode.upChild;
@@ -68,6 +68,7 @@ var runBreadthFirstSearch = function (solution) {
         nodesExamined++;
     }
     console.log("solution = " + currentNode);
+    if (currentNode === undefined) { return 'no solution' }
     return currentNode;
 };
 
@@ -85,6 +86,7 @@ exports.run = function (inputObjectIndex, solution) {
     solutionTree[inputObjectIndex].zeroIndex = search.getFirstZeroIndex(inputObjectIndex);
     queue.push(inputObjectIndex);
     solutionNode = runBreadthFirstSearch(solution);
+    if (solutionNode === 'no solution' ) { return solutionNode; }
     results.solutionPath = search.getSolutionPath(solutionNode, solutionTree);
     results.solutionTree = solutionTree;
     results.nodesCreated = nodesCreated;

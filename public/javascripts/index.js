@@ -28,11 +28,14 @@ var setInput = function () {
         inputSelected = easyInput;
     } else if ($('#mediumProblem').is(':checked')) {
         inputSelected = mediumInput;
-    } else {
+    } else if ($('#hardProblem').is(':checked')) {
         inputSelected = hardInput;
     }
 
-    if (inputSelected !== null) {
+    $('#customProblem').is(':checked') ? $('#customInputContainer').show() : $('#customInputContainer').hide();
+    !$('#customProblem').is(':checked') ? $('#standardInputContainer').show() : $('#standardInputContainer').hide();
+
+    if (inputSelected !== undefined && !$('#hardProblem').is(':checked')) {
         $('#inputBox1').html(inputSelected._1);
         $('#inputBox2').html(inputSelected._2);
         $('#inputBox3').html(inputSelected._3);
@@ -70,46 +73,53 @@ var showNextState = function () {
 var postToRunRoute = function () {
     "use strict";
     var algorithmVal, inputVal, totalState,
-        stateBox1, stateBox2, stateBox3,
-        stateBox4, stateBox5, stateBox6,
-        stateBox7, stateBox8, stateBox9;
+        customInput1, customInput2, customInput3,
+        customInput4, customInput5, customInput6,
+        customInput7, customInput8, customInput9,
+        customInput;
     algorithmVal = $('input[name=algorithm]:checked').closest('label').text();
     inputVal = $('input[name=options]:checked').closest('label').text();
-    stateBox1 = $('#stateBox1').text();
-    stateBox2 = $('#stateBox2').text();
-    stateBox3 = $('#stateBox3').text();
-    stateBox4 = $('#stateBox4').text();
-    stateBox5 = $('#stateBox5').text();
-    stateBox6 = $('#stateBox6').text();
-    stateBox7 = $('#stateBox7').text();
-    stateBox8 = $('#stateBox8').text();
-    stateBox9 = $('#stateBox9').text();
-    totalState = '{1:' + stateBox1 +
-    ',2:' + stateBox2 +
-    ',3:' + stateBox3 +
-    ',4:' + stateBox4 +
-    ',5:' + stateBox5 +
-    ',6:' + stateBox6 +
-    ',7:' + stateBox7 +
-    ',8:' + stateBox8 +
-    ',9:' + stateBox9 + '}';
-    $.post("/run", {algorithm: algorithmVal, input: inputVal, totalState: totalState},
+    customInput1 = $('#customInputBox1').val();
+    customInput2 = $('#customInputBox2').val();
+    customInput3 = $('#customInputBox3').val();
+    customInput4 = $('#customInputBox4').val();
+    customInput5 = $('#customInputBox5').val();
+    customInput6 = $('#customInputBox6').val();
+    customInput7 = $('#customInputBox7').val();
+    customInput8 = $('#customInputBox8').val();
+    customInput9 = $('#customInputBox9').val();
+    customInput = { _1:customInput1.toString(),
+                    _2:customInput2.toString(),
+                    _3:customInput3.toString(),
+                    _4:customInput4.toString(),
+                    _5:customInput5.toString(),
+                    _6:customInput6.toString(),
+                    _7:customInput7.toString(),
+                    _8:customInput8.toString(),
+                    _9:customInput9.toString() };
+    console.log('custom input = ' + customInput);
+    $.post("/run", {algorithm: algorithmVal, input: inputVal, customInput: JSON.stringify(customInput)},
         function (data) {
-            var results = JSON.parse(data);
             var runInfo = "Run # " + runNumber + " results:"
-                    + "<br>"
-                    + "Input: " + results.input
-                    + " -- Algorithm: " + results.algorithm
-                    + "<br>"
-                    + "Nodes Created: " + results.nodesCreated
-                    +"<br>"
-                    + "Nodes Examined: " + results.nodesExamined
-                    +"<br><br>";
+                            + "<br>";
+            var results = JSON.parse(data);
+
+            if (results.error === '' || results.error === undefined) {
+                runInfo += "Input: " + results.input
+                + " -- Algorithm: " + results.algorithm
+                + "<br>"
+                + "Nodes Created: " + results.nodesCreated
+                + "<br>"
+                + "Nodes Examined: " + results.nodesExamined
+                + "<br><br>";
+                states = results.solutionPath.map(JSON.parse).reverse();
+                currentState = states.length - 1;
+                showFinalState();
+            } else {
+                runInfo += results.error;
+            }
             $("#output").prepend(runInfo);
             runNumber++;
-            states = results.solutionPath.map(JSON.parse).reverse();
-            currentState = states.length - 1;
-            showFinalState();
         });
 };
 

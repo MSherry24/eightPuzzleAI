@@ -8,18 +8,44 @@ block content
     div.row
       div.col-xs-3.text-center
         h2.row Input
-        div.row
-          div.col-xs-4#inputBox1
-          div.col-xs-4#inputBox2
-          div.col-xs-4#inputBox3
-        div.row
-          div.col-xs-4#inputBox4
-          div.col-xs-4#inputBox5
-          div.col-xs-4#inputBox6
-        div.row
-          div.col-xs-4#inputBox7
-          div.col-xs-4#inputBox8
-          div.col-xs-4#inputBox9
+        div#standardInputContainer
+          div.row
+            div.col-xs-4#inputBox1
+            div.col-xs-4#inputBox2
+            div.col-xs-4#inputBox3
+          div.row
+            div.col-xs-4#inputBox4
+            div.col-xs-4#inputBox5
+            div.col-xs-4#inputBox6
+          div.row
+            div.col-xs-4#inputBox7
+            div.col-xs-4#inputBox8
+            div.col-xs-4#inputBox9
+        div#customInputContainer
+          div.row
+            div.col-xs-1
+            input.col-xs-2#customInputBox1
+            div.col-xs-2
+            input.col-xs-2#customInputBox2
+            div.col-xs-2
+            input.col-xs-2#customInputBox3
+            div.col-xs-1
+          div.row
+            div.col-xs-1
+            input.col-xs-2#customInputBox4
+            div.col-xs-2
+            input.col-xs-2#customInputBox5
+            div.col-xs-2
+            input.col-xs-2#customInputBox6
+            div.col-xs-1
+          div.row
+            div.col-xs-1
+            input.col-xs-2#customInputBox7
+            div.col-xs-2
+            input.col-xs-2#customInputBox8
+            div.col-xs-2
+            input.col-xs-2#customInputBox9
+            div.col-xs-1
         br
         div#inputRadioButtons.row.btn-group(data-toggle="buttons")
           label.btn.btn-default.active Easy
@@ -28,6 +54,8 @@ block content
             input(type="radio", name="options", id="mediumProblem", autocomplete="off")
           label.btn.btn-default Hard
             input(type="radio", name="options", id="hardProblem", autocomplete="off")
+          label.btn.btn-default Custom
+            input(type="radio", name="options", id="customProblem", autocomplete="off")
       div.col-xs-6.text-center
         h2.row Algorithm
         div.row.btn-group#algBtnGroup(data-toggle="buttons")
