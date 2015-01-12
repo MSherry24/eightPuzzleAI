@@ -1,0 +1,59 @@
+extends layout
+
+block content
+  div.jumbotron
+    h1.text-center 8 Puzzle
+    h2.text-center by Mike Sherry
+  div.container
+    div.row
+      div.col-xs-3.text-center
+        h2.row Input
+        div.row.btn-group(data-toggle="buttons")
+          label.btn.btn-default.active Easy
+            input(type="radio", name="options", id="easyProblem", autocomplete="off", checked)
+          label.btn.btn-default Medium
+            input(type="radio", name="options", id="mediumProblem", autocomplete="off")
+          label.btn.btn-default Hard
+            input(type="radio", name="options", id="hardProblem", autocomplete="off")
+      div.col-xs-6.text-center
+        h2.row Algorithm
+        div.row.btn-group#algBtnGroup(data-toggle="buttons")
+          label.btn.btn-default.active Breadth
+            input(type="radio", name="algorithm", id="breadthFirst", autocomplete="off", checked)
+          label.btn.btn-default Depth
+            input(type="radio", name="algorithm", id="depthFirst", autocomplete="off")
+          label.btn.btn-default Iterative
+            input(type="radio", name="algorithm", id="iterativeDeepening", autocomplete="off")
+          label.btn.btn-default Greedy
+            input(type="radio", name="algorithm", id="greedyBestFirst", autocomplete="off")
+          label.btn.btn-default A* Tiles
+            input(type="radio", name="algorithm", id="aStarTiles", autocomplete="off")
+          label.btn.btn-default A* Manhattan
+            input(type="radio", name="algorithm", id="aStarManhattan", autocomplete="off")
+      div.col-xs-3.text-center
+        h2.row Current State
+        div.row
+          div.col-xs-4#stateBox1 1
+          div.col-xs-4#stateBox2 2
+          div.col-xs-4#stateBox3 3
+        div.row
+          div.col-xs-4#stateBox4 4
+          div.col-xs-4#stateBox5 5
+          div.col-xs-4#stateBox6 6
+        div.row
+          div.col-xs-4#stateBox7 7
+          div.col-xs-4#stateBox8 8
+          div.col-xs-4#stateBox9 _
+        div.row
+          br
+          button.btn.btn-default#prevState(type="button") Previous State
+          button.btn.btn-default#nextState(type="button") Next State
+    br
+    div.row.text-center
+        button.btn.btn-primary.btn-lg#submitButton(type="button") Solve Puzzle
+    br
+    br
+    div.row
+      div.col-xs-12
+        div.well#output Ipsum Lorem
+
