@@ -53,14 +53,10 @@ var runBreadthFirstSearch = function (solution) {
     var currentNode, nextNodes;
     console.log('runBreadthFirstSearch starting');
     currentNode = queue.shift();
-    console.log('first current node = ' + currentNode);
     while (currentNode !== solution) {
         nextNodes = search.getNextNodes(solutionTree[currentNode].zeroIndex, currentNode);
-        console.log('bfs loop 1');
         solutionTree[currentNode] = nextNodes.currentNode;
-        console.log('bfs loop 2');
         addToQueue(nextNodes, currentNode);
-        console.log('bfs loop 3');
         currentNode = queue.shift();
     }
     console.log("solution = " + currentNode);
@@ -68,19 +64,19 @@ var runBreadthFirstSearch = function (solution) {
 };
 
 exports.run = function (inputObjectIndex, solution) {
-    console.log('run breadth first search 1');
+    console.log('run breadth first search');
+    console.log('input = ' + inputObjectIndex);
+    console.log('solution = ' + solution);
+    solutionTree = {};
+    queue = [];
     solutionTree[inputObjectIndex] = { upChild: '', downChild: '', leftChild: '',
         rightChild: '', zeroIndex: '', parent: ''};
-    console.log('run breadth first search 2');
-    console.log('inputObjectIndex = ' + inputObjectIndex);
-    console.log('solution = ' + solution);
     solutionTree[inputObjectIndex].zeroIndex = search.getFirstZeroIndex(inputObjectIndex);
-    console.log('firstZeroIndex = ' + solutionTree[inputObjectIndex].zeroIndex);
     queue.push(inputObjectIndex);
     runBreadthFirstSearch(solution);
 };
-/* exports.run is the driver for breadth first search.  It can be called from another file and takes a JSON object
- * representation of a puzzle board as an input.
+/* exports.run is the driver for breadth first search.  It can be called from another file and takes stringified
+ * JSON representations of the puzzle board and the solution as an input.
  */
 
 

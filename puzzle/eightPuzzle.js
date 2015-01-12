@@ -2,12 +2,12 @@
  * Created by Mike on 1/10/2015.
  */
 //var puzzle = require('../genericPuzzle');
-var breadth = require('../algorithms/breadthFirst')
+var breadth = require('../algorithms/breadthFirst');
 
 exports.run = function (req) {
     "use strict";
     var input, algorithm, inputObject, goal,
-      easyInput, mediumInput, hardInput;
+        easyInput, mediumInput, hardInput;
     input = req.body.input;
     algorithm = req.body.algorithm;
     goal = {_1: '1', _2: '2', _3: '3', _4: '8', _5: '0', _6: '4', _7: '7', _8: '6', _9: '5'};
@@ -25,6 +25,5 @@ exports.run = function (req) {
     if (algorithm === "Breadth") {
         breadth.run(JSON.stringify(inputObject), JSON.stringify(goal));
     }
-    console.log('input = ' + JSON.stringify(inputObject));
     return 'hi';
-}
+};
