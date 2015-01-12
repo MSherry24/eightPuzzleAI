@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var driver = require('../puzzle/eightPuzzle');
+var driver = require('../controllers/puzzle/eightPuzzle');
 
 /* GET home page. */
 router.get('/', function(req, res) {
