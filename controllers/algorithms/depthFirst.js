@@ -12,7 +12,7 @@ var search = require('./genericSearch');
  */
 var solutionTree = {};
 /*
- *  stack stores the puzzle states yet to be examined for breadth first search
+ *  stack stores the puzzle states yet to be examined for depth first search
  *  @type []
  */
 var stack;
@@ -21,6 +21,7 @@ var nodesExamined;
 
 var addToStack =  function (nextNodes, currentNode) {
     "use strict";
+    // Each child node that exists will be put onto the stack and added to the solution tree
     if (nextNodes.upChild !== undefined && solutionTree[nextNodes.upChild.nodeKey] === undefined) {
         stack.push(nextNodes.upChild.nodeKey);
         solutionTree = search.addToSolutionTree(nextNodes.upChild, currentNode, solutionTree);
@@ -46,16 +47,24 @@ var addToStack =  function (nextNodes, currentNode) {
 var runDepthFirstSearch = function (solution) {
     "use strict";
     var currentNode, nextNodes;
-    console.log('runBreadthFirstSearch starting');
+    console.log('runDepthFirstSearch starting');
+    // Get first node to examine
     currentNode = stack.pop();
     while (currentNode !== solution && currentNode !== undefined) {
+        // getNextNodes() determines all possibles moves that can be made and what the next
+        // state will look like based on each move.  This information is returned and stored
+        // as "nextNodes"
         nextNodes = search.getNextNodes(solutionTree[currentNode].zeroIndex, currentNode);
+        // Set the nextNodes to be the children of the current node
         solutionTree[currentNode].leftChild = nextNodes.currentNode.leftChild;
         solutionTree[currentNode].upChild = nextNodes.currentNode.upChild;
         solutionTree[currentNode].rightChild = nextNodes.currentNode.rightChild;
         solutionTree[currentNode].downChild = nextNodes.currentNode.downChild;
+        // addToStack puts each child node on the stack and adds them to "solutionTree"
         addToStack(nextNodes, currentNode);
+        // get the next node to examine
         currentNode = stack.pop();
+        // increment the nodesExamined counter
         nodesExamined++;
     }
     console.log("solution = " + currentNode);
@@ -66,6 +75,7 @@ var runDepthFirstSearch = function (solution) {
 exports.run = function (inputObjectIndex, solution) {
     console.log('input = ' + inputObjectIndex);
     var solutionNode, results;
+    // Variable Initialization
     solutionTree = {};
     stack = [];
     nodesCreated = 1;
@@ -73,9 +83,15 @@ exports.run = function (inputObjectIndex, solution) {
     results = {solutionPath: [] };
     solutionTree[inputObjectIndex] = { upChild: '', downChild: '', leftChild: '',
         rightChild: '', zeroIndex: '', parent: ''};
+    // Set the zero index for the top node of the tree
     solutionTree[inputObjectIndex].zeroIndex = search.getFirstZeroIndex(inputObjectIndex);
+    // Push the input node into the stack so that it is the first node examined
     stack.push(inputObjectIndex);
+
+    // Run the algorithm
     solutionNode = runDepthFirstSearch(solution);
+
+    // Parse out data and return as the results object.
     if (solutionNode.error !== undefined) { return solutionNode; }
     results.solutionPath = search.getSolutionPath(solutionNode, solutionTree);
     results.lengthOfSolution = results.solutionPath.length;

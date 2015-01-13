@@ -5,6 +5,7 @@ var states, currentState, runNumber;
 
 var setState = function () {
     "use strict";
+    // Sets the numbers that appear in the "State" section of the index page
     if (currentState !== null) {
         $('#stateBox1').html(states[currentState]._1);
         $('#stateBox2').html(states[currentState]._2);
@@ -20,6 +21,7 @@ var setState = function () {
 
 var setInput = function () {
     "use strict";
+    // Sets the numbers that appear under the Input section of the index page
     var easyInput, mediumInput, hardInput, inputSelected;
     easyInput = {_1: '1', _2: '3', _3: '4', _4: '8', _5: '6', _6: '2', _7: '7', _8: '0', _9: '5'};
     mediumInput = {_1: '2', _2: '8', _3: '1', _4: '0', _5: '4', _6: '3', _7: '7', _8: '6', _9: '5'};
@@ -32,9 +34,13 @@ var setInput = function () {
         inputSelected = hardInput;
     }
 
+    // If the user wants to use a custom input, hide the standard input display and show a grid of text
+    // inputs.  Otherwise, show the standard input and hide the custom input fields.
     $('#customProblem').is(':checked') ? $('#customInputContainer').show() : $('#customInputContainer').hide();
     !$('#customProblem').is(':checked') ? $('#standardInputContainer').show() : $('#standardInputContainer').hide();
 
+    // If custom display is not selected and the user has selected one of the input buttons, change the
+    // numbers that appear in the display grid so that they match the selected input.
     if (inputSelected !== undefined && !$('#customProblem').is(':checked')) {
         $('#inputBox1').html(inputSelected._1);
         $('#inputBox2').html(inputSelected._2);
@@ -50,18 +56,21 @@ var setInput = function () {
 
 var showFirstState = function () {
     "use strict";
+    // Used by the State portion of the page to show the initial configuration in a puzzle solution.
     currentState = 0;
     setState();
 };
 
 var showFinalState = function () {
     "use strict";
+    // Used by the State portion of the page to show the final configuration in a puzzle solution.
     currentState = states.length - 1;
     setState();
 };
 
 var showPreviousState = function () {
     "use strict";
+    // Used by the State portion of the page to show the previous configuration in a puzzle solution.
     if (currentState !== 0 && states.length !== 0) {
         currentState = currentState - 1;
         setState();
@@ -70,6 +79,7 @@ var showPreviousState = function () {
 
 var showNextState = function () {
     "use strict";
+    // Used by the State portion of the page to show the next configuration in a puzzle solution.
     if (currentState !== states.length - 1 && states.length !== 0) {
         currentState = currentState + 1;
         setState();
@@ -78,13 +88,21 @@ var showNextState = function () {
 
 var postToRunRoute = function () {
     "use strict";
-    var algorithmVal, inputVal, totalState,
+    // Called when the user clicks the "Solve Puzzle" button.  This function
+    // parses out all of the user's selections, packages them into a JSON object
+    // and passes a stringified version of that object to the app server.
+    var algorithmVal, inputVal,
         customInput1, customInput2, customInput3,
         customInput4, customInput5, customInput6,
         customInput7, customInput8, customInput9,
         customInput;
+    // Hides the submit button while the app is processing a puzzle so that multiple requests
+    // are not sent.  The application can actually handle multiple requests, but the animation that
+    // appears lets the user know that the server is working on the problem and prevents the user from
+    // erasing a problem solution from the state stepper before they examine the results.
     $('#submitButton').hide();
     $('#loadingContainer').show();
+    // Parse out the user's UI selections
     algorithmVal = $('input[name=algorithm]:checked').closest('label').text();
     inputVal = $('input[name=options]:checked').closest('label').text();
     customInput1 = $('#customInputBox1').val();
@@ -105,9 +123,11 @@ var postToRunRoute = function () {
                     _7:customInput7.toString(),
                     _8:customInput8.toString(),
                     _9:customInput9.toString() };
-    console.log('custom input = ' + customInput);
+    // Post the information to the server
     $.post("/run", {algorithm: algorithmVal, input: inputVal, customInput: JSON.stringify(customInput)},
         function (data) {
+            // "data" is the result returned by the server.  Results found in "data" are parsed and displayed
+            // at the bottom of the UI window
             var runInfo = "Run # " + runNumber + " results:"
                             + "<br>";
             var results = JSON.parse(data);
@@ -133,13 +153,16 @@ var postToRunRoute = function () {
             }
             runInfo += '<br>';
             $("#output").prepend(runInfo);
+            // Increment run number so that the next puzzle sent will have a different ID in the output window
             runNumber++;
+            // Show the submit button and hide the running animation now that the server is ready
             $('#submitButton').show();
             $('#loadingContainer').hide();
         });
 };
 
 $(document).ready(function() {
+    // Initialize button functions and global variables.
     $('#submitButton').on('click', postToRunRoute);
     $('#nextState').on('click', showNextState);
     $('#prevState').on('click', showPreviousState);

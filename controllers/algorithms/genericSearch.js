@@ -1,28 +1,31 @@
 /**
  * Created by Mike on 1/10/2015.
+ *
+ * Generic search contains common functions that are used by many or all of the serach algorithms.
+ * genericSearch.run() is also the driver that selects the correct algorithm to use based on user input.  It is called
+ * by puzzle/eightPuzzle.run()
+ *
  */
 var breadth = require('./breadthFirst');
 var depth = require('./depthFirst');
 
 
 exports.run = function(inputObject, goal, algorithm) {
+    "use strict";
+    // Initialize variables
     var results, runData;
     results = {};
-    console.log('generic Search Run');
-    console.log('input object = ' + inputObject);
-    console.log('goal  = ' + goal);
-    console.log('algorithm  = ' + algorithm);
+    // "algorithm" is a string that represents the algorithm chosen by the user.  Depending on
+    // which algorithm was chosen, this function will call the appropriate algorithm's run function
+    // and provide it the input, and the goal state.
     if (algorithm === "Breadth") {
-        console.log('run1');
         runData = runAlgorithm(JSON.stringify(inputObject), JSON.stringify(goal), breadth);
-        console.log('run2');
         results.error = (results.info === 'no solution') ? { error: 'no solution found' } : '';
     }
     else if (algorithm === "Depth") {
         runData = runAlgorithm(JSON.stringify(inputObject), JSON.stringify(goal), depth);
         results.error = (results.info === 'no solution') ? { error: 'no solution found' } : '';
     }
-    console.log('run3');
     results.info = runData.result;
     results.info.runTime = runData.runTime;
     return results;
@@ -30,6 +33,8 @@ exports.run = function(inputObject, goal, algorithm) {
 
 var runAlgorithm = function (input, goal, algorithm) {
     "use strict";
+    // This is simply a wrapper function that calls the run() function of the provided algorithm object
+    // and logs the running time.  The run time in seconds is returned along with the algorithm's results.
     var startTime, endTime, result;
     startTime = new Date().getTime();
     result = algorithm.run(input, goal);
@@ -39,16 +44,22 @@ var runAlgorithm = function (input, goal, algorithm) {
 
 var swap = function (currentNodeKey, zeroIndex, swapIndex) {
     "use strict";
+    // Used by getNextNodes() to generate a new puzzle state by swapping the open spot (represented by a "0")
+    // with the provided swap index.
     var newNode, currentNode;
     newNode = JSON.parse(currentNodeKey);
     currentNode = JSON.parse(currentNodeKey);
     newNode[zeroIndex] = currentNode[swapIndex];
     newNode[swapIndex] = currentNode[zeroIndex];
+    // The newly generated puzzle state and its zero index are returned
     return { nodeKey: JSON.stringify(newNode), zeroIndex: swapIndex };
 };
 
 exports.getFirstZeroIndex = function (inputObjectIndex) {
     "use strict";
+    // This is called at the beginning of an algorithm to determine which spot in the puzzle
+    // is the open spot.  After this is determined, all future puzzle states will have their zero index
+    // cached as a part of their object that is stored in the solutionTree.
     var inputObject = JSON.parse(inputObjectIndex);
     if (inputObject._1 === '0') { return '_1'; }
     if (inputObject._2 === '0') { return '_2'; }
@@ -63,6 +74,12 @@ exports.getFirstZeroIndex = function (inputObjectIndex) {
 
 exports.getNextNodes = function (zeroIndex, currentNode) {
     "use strict";
+    // This function takes a puzzle state (or "Node") and its zero index as input.  Depending on
+    // the zeroIndex, a certain number of child states are possible.  For example, if the zeroIndex is 1,
+    // this corresponds to the open spot of the eight puzzle being in the top left square on the board.
+    // There are only two future puzzle states, one if you move the tile below the zero index up, and one
+    // if you slide the tile to the right of the zero index left.  In this case, the function calls swap()
+    // with inputs of '_2' and '_4' and sets them to 'rightChild' and 'downChild' respectively.
     var upChild, downChild, rightChild, leftChild, nextNodes;
     if (zeroIndex === '_1') {
         rightChild = swap(currentNode, zeroIndex, '_2');
@@ -106,10 +123,7 @@ exports.getNextNodes = function (zeroIndex, currentNode) {
         upChild = swap(currentNode, zeroIndex, '_6');
         leftChild = swap(currentNode, zeroIndex, '_8');
     }
-    currentNode.upChild = upChild === null ? JSON.stringify(upChild) : '';
-    currentNode.leftChild = leftChild === null ? JSON.stringify(leftChild) : '';
-    currentNode.downChild = downChild === null ? JSON.stringify(downChild) : '';
-    currentNode.rightChild = rightChild === null ? JSON.stringify(rightChild) : '';
+    // The objects themselves are stored in the NextNodes object and returned to the calling function.
     nextNodes = {};
     nextNodes.upChild = upChild;
     nextNodes.leftChild = leftChild;
@@ -120,6 +134,11 @@ exports.getNextNodes = function (zeroIndex, currentNode) {
 };
 
 exports.getSolutionPath = function(solutionNode, solutionTree) {
+    "use strict";
+    // getSolutionPath takes the final node of a puzzle solution and the tree generated by
+    // the algorithm and traces back to the top most node in the tree.  Each step, it adds
+    // the node it finds to an array and this array is eventually passed back to the UI so that the
+    // user can step through a solution from beginning to end.
     var solutionPath, currentNode;
     solutionPath = [];
     currentNode = solutionNode;
@@ -133,9 +152,14 @@ exports.getSolutionPath = function(solutionNode, solutionTree) {
 
 exports.addToSolutionTree = function (nodeToAdd, currentNode, solutionTree) {
     "use strict";
-    solutionTree[nodeToAdd.nodeKey] = { upChild: '', leftChild: '',
-        downChild: '', rightChild: '',
-        parent: currentNode, zeroIndex: nodeToAdd.zeroIndex
+    // This function only takes a new node and adds it to a solutionTree object.  The only reason
+    // this is broken out into its own function is because it is called by multiple algorithms.
+    solutionTree[nodeToAdd.nodeKey] = { upChild: '',
+                                        leftChild: '',
+                                        downChild: '',
+                                        rightChild: '',
+                                        parent: currentNode,
+                                        zeroIndex: nodeToAdd.zeroIndex
     };
     return solutionTree;
 };

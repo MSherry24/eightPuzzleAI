@@ -1,11 +1,10 @@
 var search = require('./genericSearch');
-var queue = [];
 /*
  *  queue stores the puzzle states yet to be examined for breadth first search
  */
+var queue = [];
 var nodesCreated;
 var nodesExamined;
-var solutionTree = {};
 /* solutionTree is the object we will use to keep track of all nodes that have been checked.
  *  The index is a stringified version of the json puzzle representation, which will be unique for each configuration.
  *  JSON.stringify() and JSON.parse() will translate the index back and forth beween a unique key and a usable object.
@@ -17,9 +16,11 @@ var solutionTree = {};
  *
  * @type {{upChild: string, downChild: string, leftChild: string, rightChild: string, parent: string, zeroIndex: string}}
  */
+var solutionTree = {};
 
-var addToQueue =  function (nextNodes, currentNode) {
+var addToQueue = function (nextNodes, currentNode) {
     "use strict";
+    // Each child node that exists will be put onto the queue and added to the solution tree
     if (nextNodes.upChild !== undefined && solutionTree[nextNodes.upChild.nodeKey] === undefined) {
         queue.push(nextNodes.upChild.nodeKey);
         solutionTree = search.addToSolutionTree(nextNodes.upChild, currentNode, solutionTree);
@@ -48,13 +49,20 @@ var runBreadthFirstSearch = function (solution) {
     console.log('runBreadthFirstSearch starting');
     currentNode = queue.shift();
     while (currentNode !== solution && currentNode !== undefined) {
+        // getNextNodes() determines all possibles moves that can be made and what the next
+        // state will look like based on each move.  This information is returned and stored
+        // as "nextNodes"
         nextNodes = search.getNextNodes(solutionTree[currentNode].zeroIndex, currentNode);
+        // Set the nextNodes to be the children of the current node
         solutionTree[currentNode].leftChild = nextNodes.currentNode.leftChild;
         solutionTree[currentNode].upChild = nextNodes.currentNode.upChild;
         solutionTree[currentNode].rightChild = nextNodes.currentNode.rightChild;
         solutionTree[currentNode].downChild = nextNodes.currentNode.downChild;
+        // addToStack puts each child node on the queue and adds them to "solutionTree"
         addToQueue(nextNodes, currentNode);
+        // get the next node to examine
         currentNode = queue.shift();
+        // increment the nodesExamined counter
         nodesExamined++;
     }
     console.log("solution = " + currentNode);
@@ -62,9 +70,13 @@ var runBreadthFirstSearch = function (solution) {
     return currentNode;
 };
 
+/* exports.run is the driver for breadth first search.  It can be called from another file and takes stringified
+ * JSON representations of the puzzle board and the solution as an input.
+ */
 exports.run = function (inputObjectIndex, solution) {
     console.log('input = ' + inputObjectIndex);
     var solutionNode, results;
+    // Variable Initialization
     solutionTree = {};
     queue = [];
     nodesCreated = 1;
@@ -72,9 +84,15 @@ exports.run = function (inputObjectIndex, solution) {
     results = {solutionPath: [] };
     solutionTree[inputObjectIndex] = { upChild: '', downChild: '', leftChild: '',
         rightChild: '', zeroIndex: '', parent: ''};
+    // Set the zero index for the top node of the tree
     solutionTree[inputObjectIndex].zeroIndex = search.getFirstZeroIndex(inputObjectIndex);
+    // Push the input node into the stack so that it is the first node examined
     queue.push(inputObjectIndex);
+
+    // Run the algorithm
     solutionNode = runBreadthFirstSearch(solution);
+
+    // Parse out data and return as the results object.
     if (solutionNode.error !== undefined) { return solutionNode; }
     results.solutionPath = search.getSolutionPath(solutionNode, solutionTree);
     results.lengthOfSolution = results.solutionPath.length;
@@ -83,9 +101,7 @@ exports.run = function (inputObjectIndex, solution) {
     results.nodesExamined = nodesExamined;
     return results;
 };
-/* exports.run is the driver for breadth first search.  It can be called from another file and takes stringified
- * JSON representations of the puzzle board and the solution as an input.
- */
+
 
 
 
