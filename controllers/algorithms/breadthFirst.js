@@ -68,7 +68,7 @@ var runBreadthFirstSearch = function (solution) {
         nodesExamined++;
     }
     console.log("solution = " + currentNode);
-    if (currentNode === undefined) { return 'no solution' }
+    if (currentNode === undefined) { return { error: 'All possible paths examined.  No solution found.' }; }
     return currentNode;
 };
 
@@ -86,8 +86,9 @@ exports.run = function (inputObjectIndex, solution) {
     solutionTree[inputObjectIndex].zeroIndex = search.getFirstZeroIndex(inputObjectIndex);
     queue.push(inputObjectIndex);
     solutionNode = runBreadthFirstSearch(solution);
-    if (solutionNode === 'no solution' ) { return solutionNode; }
+    if (solutionNode.error !== undefined) { return solutionNode; }
     results.solutionPath = search.getSolutionPath(solutionNode, solutionTree);
+    results.lengthOfSolution = results.solutionPath.length;
     results.solutionTree = solutionTree;
     results.nodesCreated = nodesCreated;
     results.nodesExamined = nodesExamined;

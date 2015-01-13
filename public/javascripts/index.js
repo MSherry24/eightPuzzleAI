@@ -35,7 +35,7 @@ var setInput = function () {
     $('#customProblem').is(':checked') ? $('#customInputContainer').show() : $('#customInputContainer').hide();
     !$('#customProblem').is(':checked') ? $('#standardInputContainer').show() : $('#standardInputContainer').hide();
 
-    if (inputSelected !== undefined && !$('#hardProblem').is(':checked')) {
+    if (inputSelected !== undefined && !$('#customProblem').is(':checked')) {
         $('#inputBox1').html(inputSelected._1);
         $('#inputBox2').html(inputSelected._2);
         $('#inputBox3').html(inputSelected._3);
@@ -103,20 +103,25 @@ var postToRunRoute = function () {
             var runInfo = "Run # " + runNumber + " results:"
                             + "<br>";
             var results = JSON.parse(data);
-
-            if (results.error === '' || results.error === undefined) {
-                runInfo += "Input: " + results.input
-                + " -- Algorithm: " + results.algorithm
+                runInfo += "Input: " + results.info.input
+                + " -- Algorithm: " + results.info.algorithm
                 + "<br>"
-                + "Nodes Created: " + results.nodesCreated
+                + "Nodes Created: " + results.info.nodesCreated
                 + "<br>"
-                + "Nodes Examined: " + results.nodesExamined
-                + "<br><br>";
-                states = results.solutionPath.map(JSON.parse).reverse();
+                + "Nodes Examined: " + results.info.nodesExamined
+                + "<br>"
+                + "Steps in Solution: " + results.info.lengthOfSolution
+                + "<br>"
+                + "Total Running Time: " + results.info.runTime + " seconds"
+                + "<br>";
+            if (results.info.error === "" || results.info.error === undefined) {
+                states = results.info.solutionPath.map(JSON.parse).reverse();
                 currentState = states.length - 1;
                 showFinalState();
             } else {
-                runInfo += results.error;
+                runInfo += 'Error during analysis.  Error message - '
+                + results.info.error
+                + '<br><br>';
             }
             $("#output").prepend(runInfo);
             runNumber++;

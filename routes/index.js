@@ -8,8 +8,7 @@ router.get('/', function(req, res) {
 });
 
 router.post('/run', function(req, res) {
-  var results;
-  results = driver.run(req);
+  var results = driver.run(req);
   res.json(JSON.stringify(results));
 });
 
