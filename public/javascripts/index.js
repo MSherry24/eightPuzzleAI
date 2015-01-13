@@ -48,6 +48,12 @@ var setInput = function () {
     }
 };
 
+var showFirstState = function () {
+    "use strict";
+    currentState = 0;
+    setState();
+};
+
 var showFinalState = function () {
     "use strict";
     currentState = states.length - 1;
@@ -121,8 +127,9 @@ var postToRunRoute = function () {
             } else {
                 runInfo += 'Error during analysis.  Error message - '
                 + results.info.error
-                + '<br><br>';
+                + '<br>';
             }
+            runInfo += '<br>';
             $("#output").prepend(runInfo);
             runNumber++;
         });
@@ -132,6 +139,8 @@ $(document).ready(function() {
     $('#submitButton').on('click', postToRunRoute);
     $('#nextState').on('click', showNextState);
     $('#prevState').on('click', showPreviousState);
+    $('#firstState').on('click', showFirstState);
+    $('#lastState').on('click', showFinalState);
     $('#inputRadioButtons').on('change', setInput);
     states = [];
     currentState = 0;

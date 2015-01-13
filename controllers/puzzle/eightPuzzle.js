@@ -2,22 +2,13 @@
  * Created by Mike on 1/10/2015.
  */
 //var puzzle = require('../genericPuzzle');
-var breadth = require('../algorithms/breadthFirst');
-
-var runAlgorithm = function (input, goal, algorithm) {
-    "use strict";
-    var startTime, endTime, result;
-    startTime = new Date().getTime();
-    result = algorithm.run(input, goal);
-    endTime = new Date().getTime();
-    return { result: result, runTime: (endTime - startTime) / 1000 };
-};
+var search = require('../algorithms/genericSearch');
 
 exports.run = function (req) {
     "use strict";
     var input, algorithm, inputObject, goal,
         easyInput, mediumInput, hardInput, results,
-        startTime, endTime, runData;
+        startTime, endTime, runData, data;
     input = req.body.input;
     algorithm = req.body.algorithm;
     goal = {_1: '1', _2: '2', _3: '3', _4: '8', _5: '0', _6: '4', _7: '7', _8: '6', _9: '5'};
@@ -34,16 +25,9 @@ exports.run = function (req) {
     } else {
         inputObject = JSON.parse(req.body.customInput);
     }
-    console.log('inputObject = ' + inputObject);
-    results = { };
-    if (algorithm === "Breadth") {
-        runData = runAlgorithm(JSON.stringify(inputObject), JSON.stringify(goal), breadth);
-        results.error = (results.info === 'no solution') ? { error: 'no solution found' } : '';
-    }
-    results.info = runData.result;
+    results = search.run(inputObject, goal, algorithm);
     results.info.input = input;
     results.info.algorithm = algorithm;
-    results.info.runTime = runData.runTime;
     results.error = (results.error === '') ? '' : results.error;
     return results;
 };

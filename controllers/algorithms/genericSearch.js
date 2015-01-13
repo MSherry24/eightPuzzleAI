@@ -1,6 +1,41 @@
 /**
  * Created by Mike on 1/10/2015.
  */
+var breadth = require('./breadthFirst');
+var depth = require('./depthFirst');
+
+
+exports.run = function(inputObject, goal, algorithm) {
+    var results, runData;
+    results = {};
+    console.log('generic Search Run');
+    console.log('input object = ' + inputObject);
+    console.log('goal  = ' + goal);
+    console.log('algorithm  = ' + algorithm);
+    if (algorithm === "Breadth") {
+        console.log('run1');
+        runData = runAlgorithm(JSON.stringify(inputObject), JSON.stringify(goal), breadth);
+        console.log('run2');
+        results.error = (results.info === 'no solution') ? { error: 'no solution found' } : '';
+    }
+    else if (algorithm === "Depth") {
+        runData = runAlgorithm(JSON.stringify(inputObject), JSON.stringify(goal), depth);
+        results.error = (results.info === 'no solution') ? { error: 'no solution found' } : '';
+    }
+    console.log('run3');
+    results.info = runData.result;
+    results.info.runTime = runData.runTime;
+    return results;
+}
+
+var runAlgorithm = function (input, goal, algorithm) {
+    "use strict";
+    var startTime, endTime, result;
+    startTime = new Date().getTime();
+    result = algorithm.run(input, goal);
+    endTime = new Date().getTime();
+    return { result: result, runTime: (endTime - startTime) / 1000 };
+};
 
 var swap = function (currentNodeKey, zeroIndex, swapIndex) {
     "use strict";
@@ -86,7 +121,6 @@ exports.getNextNodes = function (zeroIndex, currentNode) {
 
 exports.getSolutionPath = function(solutionNode, solutionTree) {
     var solutionPath, currentNode;
-    console.log('getSolutionPath');
     solutionPath = [];
     currentNode = solutionNode;
     solutionPath.push(solutionNode);
@@ -95,4 +129,13 @@ exports.getSolutionPath = function(solutionNode, solutionTree) {
         solutionPath.push(currentNode);
     };
     return solutionPath;
+};
+
+exports.addToSolutionTree = function (nodeToAdd, currentNode, solutionTree) {
+    "use strict";
+    solutionTree[nodeToAdd.nodeKey] = { upChild: '', leftChild: '',
+        downChild: '', rightChild: '',
+        parent: currentNode, zeroIndex: nodeToAdd.zeroIndex
+    };
+    return solutionTree;
 };
