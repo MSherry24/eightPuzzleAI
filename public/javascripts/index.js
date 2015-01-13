@@ -83,6 +83,8 @@ var postToRunRoute = function () {
         customInput4, customInput5, customInput6,
         customInput7, customInput8, customInput9,
         customInput;
+    $('#submitButton').hide();
+    $('#loadingContainer').show();
     algorithmVal = $('input[name=algorithm]:checked').closest('label').text();
     inputVal = $('input[name=options]:checked').closest('label').text();
     customInput1 = $('#customInputBox1').val();
@@ -132,6 +134,8 @@ var postToRunRoute = function () {
             runInfo += '<br>';
             $("#output").prepend(runInfo);
             runNumber++;
+            $('#submitButton').show();
+            $('#loadingContainer').hide();
         });
 };
 
@@ -142,6 +146,8 @@ $(document).ready(function() {
     $('#firstState').on('click', showFirstState);
     $('#lastState').on('click', showFinalState);
     $('#inputRadioButtons').on('change', setInput);
+    $('#submitButton').show();
+    $('#loadingContainer').hide();
     states = [];
     currentState = 0;
     runNumber = 1;
