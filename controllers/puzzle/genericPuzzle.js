@@ -33,6 +33,7 @@ exports.run = function (req) {
         goal, solution,
         startTime, endTime,
         puzzleOut, res;
+    console.log('genericPuzzle.run');
     puzzle = '';
     res = {};
     puzzleType = req.body.puzzleType;
@@ -52,6 +53,7 @@ exports.run = function (req) {
         endTime = new Date().getTime();
         res.runTime = (endTime - startTime) / 1000
     }
+    console.log('solutionPath = ' + puzzleOut.solutionTree);
 
     res.solutionPath = getSolutionPath(goal, puzzleOut.solutionTree)
 
@@ -64,10 +66,11 @@ var getSolutionPath = function(goal, solutionTree) {
     // the node it finds to an array and this array is eventually passed back to the UI so that the
     // user can step through a solution from beginning to end.
     var solutionPath, currentNode;
+    console.log('getSolutionPath');
     solutionPath = [];
     currentNode = goal;
     solutionPath.push(goal);
-    while (solutionTree[currentNode].parent !== '') {
+    while (solutionTree[currentNode].parent !== 'root') {
         currentNode = solutionTree[currentNode].parent;
         solutionPath.push(currentNode);
     };
@@ -79,6 +82,7 @@ var runPuzzle = function (input, goal, algorithm, puzzle) {
     // This is simply a wrapper function that calls the run() function of the provided algorithm object
     // and logs the running time.  The run time in seconds is returned along with the algorithm's results.
     var startTime, endTime, result;
+    console.log('runPuzzle');
     startTime = new Date().getTime();
     result = puzzle.run(input, goal, algorithm);
     endTime = new Date().getTime();

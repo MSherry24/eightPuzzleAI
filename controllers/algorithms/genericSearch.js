@@ -11,6 +11,8 @@ var depth = require('./depthFirst');
 
 
 var getSearch = function(algorithm) {
+    "use strict";
+    console.log('getSearch');
     if (algorithm === 'Breadth') {
         return breadth;
     } else if (algorithm === 'Depth') {
@@ -18,57 +20,52 @@ var getSearch = function(algorithm) {
     }
 };
 
+// Returns solution Tree
 exports.run = function(input, goal, algorithm, rootNode,
                        addToSolutionTree, successorFunction) {
     "use strict";
     var solutionTree, search, results;
+    console.log('genericSearch.run');
     // create solution tree and add in root node
     solutionTree = {};
     solutionTree[input] = rootNode;
     // Find correct search object
     search = getSearch(algorithm);
+    // Initialize results object
+    results = {};
     // Run search
-    results = search.run(input, goal, solutionTree,
-                            addToSolutionTree, successorFunction);
-
-
+    if (algorithm === 'Breadth' || algorithm === 'Depth') {
+        results.solutionTree =  runSearch(input, goal, solutionTree,
+                                            addToSolutionTree, successorFunction,
+                                            search, '');
+    }
+    console.log('returning results');
     return results;
 };
 
-
-
-
-/**
-var runBreadthFirstSearch = function (solution) {
+var runSearch = function(input, goal, solutionTree,
+                         addToSolutionTree, successorFunction,
+                         search, maxDepth) {
     "use strict";
-    var currentNode, nextNodes;
-    console.log('runBreadthFirstSearch starting');
-    currentNode = queue.shift();
-    while (currentNode !== solution && currentNode !== undefined) {
-        // getNextNodes() determines all possibles moves that can be made and what the next
-        // state will look like based on each move.  This information is returned and stored
-        // as "nextNodes"
-        nextNodes = search.getNextNodes(solutionTree[currentNode].zeroIndex, currentNode);
-        // Set the nextNodes to be the children of the current node
-        solutionTree[currentNode].leftChild = nextNodes.currentNode.leftChild;
-        solutionTree[currentNode].upChild = nextNodes.currentNode.upChild;
-        solutionTree[currentNode].rightChild = nextNodes.currentNode.rightChild;
-        solutionTree[currentNode].downChild = nextNodes.currentNode.downChild;
-        // addToStack puts each child node on the queue and adds them to "solutionTree"
-        addToQueue(nextNodes, currentNode);
-        // get the next node to examine
-        currentNode = queue.shift();
-        // increment the nodesExamined counter
-        nodesExamined++;
+    var currentKey, nextNodes, currentDepth;
+    console.log('genericSearch.runSearch');
+    currentKey = input;
+    currentDepth = 0;
+    while (currentKey !== goal && (maxDepth === '' || currentDepth < maxDepth)) {
+        console.log('current key = ' + currentKey );
+        nextNodes = successorFunction(currentKey, solutionTree);
+        nextNodes.map(function(node) {
+            console.log('mapping new nodes to solution tree. node.whatChild = ' + node.whatChildIsThis);
+            if (node.key !== '') {
+                solutionTree = addToSolutionTree(node, currentKey, solutionTree);
+                search.addNode(node.key);
+            }
+        });
+        currentKey = search.getNextNode();
+        currentDepth = solutionTree[currentKey].depth;
     }
-    console.log("solution = " + currentNode);
-    if (currentNode === undefined) { return { error: 'All possible paths examined.  No solution found.' }; }
-    return currentNode;
+    console.log ('current Key = ' + currentKey);
+    console.log (' goal = ' + goal);
+    console.log ('success? - ' + (currentKey === goal));
+    return solutionTree;
 };
- **/
-
-
-
-
-
-

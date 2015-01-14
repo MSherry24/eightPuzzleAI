@@ -2,10 +2,11 @@
  * Created by Mike on 1/10/2015.
  *
  */
-var search = require('./genericSearch');
+var search = require('../algorithms/genericSearch');
 exports.run = function (input, goal, algorithm) {
     "use strict";
     var results, rootNode;
+    console.log('eightPuzzle.run');
     // create root Node
     rootNode = {
         upChild: '',
@@ -14,24 +15,29 @@ exports.run = function (input, goal, algorithm) {
         rightChild: '',
         parent: 'root',
         zeroIndex: getFirstZeroIndex(input),
-        whatChildIsThis: 'root'
-    }
+        whatChildIsThis: 'root',
+        depth: 0
+    };
+    console.log('first zero index = ' + rootNode.zeroIndex);
     results = search.run(input, goal, algorithm, rootNode,
                             addToSolutionTree, successorFunction);
 
     // Add the user's input and algorithm choice to the results object so that it can be
     // displayed back to the user along with the puzzle results
-    results.info.input = input;
-    results.info.algorithm = algorithm;
+    results.input = input;
+    results.algorithm = algorithm;
+    console.log('eight puzzle run returning');
     return results;
 };
 
-var getFirstZeroIndex = function (inputObjectIndex) {
+var getFirstZeroIndex = function (input) {
     "use strict";
     // This is called at the beginning of an algorithm to determine which spot in the puzzle
     // is the open spot.  After this is determined, all future puzzle states will have their zero index
     // cached as a part of their object that is stored in the solutionTree.
-    var inputObject = JSON.parse(inputObjectIndex);
+    console.log('getFirstZeroIndex');
+    console.log('input = ' + input);
+    var inputObject = JSON.parse(input);
     if (inputObject._1 === '0') { return '_1'; }
     if (inputObject._2 === '0') { return '_2'; }
     if (inputObject._3 === '0') { return '_3'; }
@@ -43,23 +49,25 @@ var getFirstZeroIndex = function (inputObjectIndex) {
     return '_9';
 };
 
-var addToSolutionTree = function (nodeToAdd, currentNode, solutionTree, whatChild) {
+var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
     "use strict";
     // This function only takes a new node and adds it to a solutionTree object.  The only reason
     // this is broken out into its own function is because it is called by multiple algorithms.
-    solutionTree[nodeToAdd.nodeKey] = {
+    console.log('addToSolutionTree');
+    solutionTree[newNodeObject.key] = {
         upChild: '',
         leftChild: '',
         downChild: '',
         rightChild: '',
-        parent: currentNode,
-        zeroIndex: nodeToAdd.zeroIndex,
-        whatChildIsThis: whatChild
+        parent: currentKey,
+        zeroIndex: newNodeObject.zeroIndex,
+        whatChildIsThis: newNodeObject.whatChildIsThis,
+        depth: solutionTree[currentKey].depth + 1
     };
     return solutionTree;
 };
 
-var successorFunction = function (currentNode, solutionTree) {
+var successorFunction = function (currentKey, solutionTree) {
     "use strict";
     // This function takes a puzzle state (or "Node") and its zero index as input.  Depending on
     // the zeroIndex, a certain number of child states are possible.  For example, if the zeroIndex is 1,
@@ -68,68 +76,79 @@ var successorFunction = function (currentNode, solutionTree) {
     // if you slide the tile to the right of the zero index left.  In this case, the function calls swap()
     // with inputs of '_2' and '_4' and sets them to 'rightChild' and 'downChild' respectively.
     var upChild, downChild, rightChild, leftChild, nextNodes, swap, zeroIndex;
+    console.log('successorFunction');
     swap = function (currentKey, zeroIndex, swapIndex) {
         "use strict";
         // Used by getNextNodes() to generate a new puzzle state by swapping the open spot (represented by a "0")
         // with the provided swap index.
         var newNode, currentNode;
+        console.log('swap');
         newNode = JSON.parse(currentKey);
         currentNode = JSON.parse(currentKey);
         newNode[zeroIndex] = currentNode[swapIndex];
         newNode[swapIndex] = currentNode[zeroIndex];
         // The newly generated puzzle state and its zero index are returned
-        return { nodeKey: JSON.stringify(newNode), zeroIndex: swapIndex };
+        return { key: JSON.stringify(newNode), zeroIndex: swapIndex };
     };
-    zeroIndex = solutionTree[currentNode].zeroIndex
+    zeroIndex = solutionTree[currentKey].zeroIndex;
+    upChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
+    leftChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
+    downChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
+    rightChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
+    console.log('successorFunction zeroIndex = ' + zeroIndex);
     if (zeroIndex === '_1') {
-        rightChild = swap(currentNode, zeroIndex, '_2');
-        downChild = swap(currentNode, zeroIndex, '_4');
+        rightChild = swap(currentKey, zeroIndex, '_2');
+        downChild = swap(currentKey, zeroIndex, '_4');
     }
     if (zeroIndex === '_2') {
-        leftChild = swap(currentNode, zeroIndex, '_1');
-        rightChild = swap(currentNode, zeroIndex, '_3');
-        downChild = swap(currentNode, zeroIndex, '_5');
+        leftChild = swap(currentKey, zeroIndex, '_1');
+        rightChild = swap(currentKey, zeroIndex, '_3');
+        downChild = swap(currentKey, zeroIndex, '_5');
     }
     if (zeroIndex === '_3') {
-        leftChild = swap(currentNode, zeroIndex, '_2');
-        downChild = swap(currentNode, zeroIndex, '_6');
+        leftChild = swap(currentKey, zeroIndex, '_2');
+        downChild = swap(currentKey, zeroIndex, '_6');
     }
     if (zeroIndex === '_4') {
-        upChild = swap(currentNode, zeroIndex, '_1');
-        rightChild = swap(currentNode, zeroIndex, '_5');
-        downChild = swap(currentNode, zeroIndex, '_7');
+        upChild = swap(currentKey, zeroIndex, '_1');
+        rightChild = swap(currentKey, zeroIndex, '_5');
+        downChild = swap(currentKey, zeroIndex, '_7');
     }
     if (zeroIndex === '_5') {
-        upChild = swap(currentNode, zeroIndex, '_2');
-        leftChild = swap(currentNode, zeroIndex, '_6');
-        rightChild = swap(currentNode, zeroIndex, '_4');
-        downChild = swap(currentNode, zeroIndex, '_8');
+        upChild = swap(currentKey, zeroIndex, '_2');
+        leftChild = swap(currentKey, zeroIndex, '_6');
+        rightChild = swap(currentKey, zeroIndex, '_4');
+        downChild = swap(currentKey, zeroIndex, '_8');
     }
     if (zeroIndex === '_6') {
-        upChild = swap(currentNode, zeroIndex, '_3');
-        leftChild = swap(currentNode, zeroIndex, '_5');
-        downChild = swap(currentNode, zeroIndex, '_9');
+        upChild = swap(currentKey, zeroIndex, '_3');
+        leftChild = swap(currentKey, zeroIndex, '_5');
+        downChild = swap(currentKey, zeroIndex, '_9');
     }
     if (zeroIndex === '_7') {
-        upChild = swap(currentNode, zeroIndex, '_4');
-        rightChild = swap(currentNode, zeroIndex, '_8');
+        upChild = swap(currentKey, zeroIndex, '_4');
+        rightChild = swap(currentKey, zeroIndex, '_8');
     }
     if (zeroIndex === '_8') {
-        upChild = swap(currentNode, zeroIndex, '_5');
-        leftChild = swap(currentNode, zeroIndex, '_7');
-        rightChild = swap(currentNode, zeroIndex, '_9');
+        upChild = swap(currentKey, zeroIndex, '_5');
+        leftChild = swap(currentKey, zeroIndex, '_7');
+        rightChild = swap(currentKey, zeroIndex, '_9');
     }
     if (zeroIndex === '_9') {
-        upChild = swap(currentNode, zeroIndex, '_6');
-        leftChild = swap(currentNode, zeroIndex, '_8');
+        upChild = swap(currentKey, zeroIndex, '_6');
+        leftChild = swap(currentKey, zeroIndex, '_8');
     }
     // The objects themselves are stored in the NextNodes array and returned to the calling function.
     nextNodes = [];
-    nextNodes.push({key: upChild, whatChildIsThis: 'UP'});
-    nextNodes.push({key: leftChild, whatChildIsThis: 'LEFT'});
-    nextNodes.push({key: downChild, whatChildIsThis: 'DOWN'});
-    nextNodes.push({key: rightChild, whatChildIsThis: 'RIGHT'});
-    nextNodes.currentNode = currentNode;
+    upChild.whatChildIsThis = 'UP';
+    leftChild.whatChildIsThis = 'LEFT';
+    downChild.whatChildIsThis = 'DOWN';
+    rightChild.whatChildIsThis = 'RIGHT';
+    nextNodes.push(upChild);
+    nextNodes.push(leftChild);
+    nextNodes.push(downChild);
+    nextNodes.push(rightChild);
+    console.log('end successorFunction');
     return nextNodes;
 };
 
