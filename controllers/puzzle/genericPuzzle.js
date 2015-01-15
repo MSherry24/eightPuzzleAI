@@ -51,13 +51,12 @@ exports.run = function (req) {
         startTime = new Date().getTime();
         puzzleOut = puzzle.run(input, goal, algorithm);
         endTime = new Date().getTime();
-        res.runTime = (endTime - startTime) / 1000
+        res.runTime = (endTime - startTime) / 1000;
+        res.solutionPath = getSolutionPath(goal, res.solutionTree);
     }
     console.log('solutionPath = ' + puzzleOut.solutionTree);
-
-    res.solutionPath = getSolutionPath(goal, puzzleOut.solutionTree)
-
-}
+    return res;
+};
 
 var getSolutionPath = function(goal, solutionTree) {
     "use strict";
@@ -75,17 +74,4 @@ var getSolutionPath = function(goal, solutionTree) {
         solutionPath.push(currentNode);
     };
     return solutionPath;
-};
-
-var runPuzzle = function (input, goal, algorithm, puzzle) {
-    "use strict";
-    // This is simply a wrapper function that calls the run() function of the provided algorithm object
-    // and logs the running time.  The run time in seconds is returned along with the algorithm's results.
-    var startTime, endTime, result;
-    console.log('runPuzzle');
-    startTime = new Date().getTime();
-    result = puzzle.run(input, goal, algorithm);
-    endTime = new Date().getTime();
-    result.runTime = (endTime - startTime) / 1000
-    return result;
 };

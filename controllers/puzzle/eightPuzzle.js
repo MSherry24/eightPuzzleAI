@@ -54,6 +54,9 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
     // This function only takes a new node and adds it to a solutionTree object.  The only reason
     // this is broken out into its own function is because it is called by multiple algorithms.
     console.log('addToSolutionTree');
+    console.log('newNodeObject = ' + newNodeObject);
+    console.log('currentKey = ' + currentKey);
+    console.log('solutionTree = ' + solutionTree);
     solutionTree[newNodeObject.key] = {
         upChild: '',
         leftChild: '',
@@ -64,6 +67,7 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
         whatChildIsThis: newNodeObject.whatChildIsThis,
         depth: solutionTree[currentKey].depth + 1
     };
+    console.log('end addToSolutionTree');
     return solutionTree;
 };
 

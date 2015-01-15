@@ -153,9 +153,11 @@ var postToRunRoute = function () {
         function (data) {
             // "data" is the result returned by the server.  Results found in "data" are parsed and displayed
             // at the bottom of the UI window
+
             var runInfo = "Run # " + runNumber + " results:"
                             + "<br>";
             var results = JSON.parse(data);
+            /*
                 runInfo += "Input: " + results.info.input
                 + " -- Algorithm: " + results.info.algorithm
                 + "<br>"
@@ -177,6 +179,8 @@ var postToRunRoute = function () {
                 + '<br>';
             }
             runInfo += '<br>';
+            */
+            var solutionPath = getSolutionPath(JSON.stringify(goal), results.solutionTree);
             $("#output").prepend(runInfo);
             // Increment run number so that the next puzzle sent will have a different ID in the output window
             runNumber++;
@@ -185,6 +189,8 @@ var postToRunRoute = function () {
             $('#loadingContainer').hide();
         });
 };
+
+
 
 $(document).ready(function() {
     // Initialize button functions and global variables.

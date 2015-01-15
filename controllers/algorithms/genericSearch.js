@@ -26,13 +26,14 @@ exports.run = function(input, goal, algorithm, rootNode,
     "use strict";
     var solutionTree, search, results;
     console.log('genericSearch.run');
-    // create solution tree and add in root node
+    // create empty results object and empty solution tree. Add root node to SolutionTree
     solutionTree = {};
+    results = {};
     solutionTree[input] = rootNode;
     // Find correct search object
     search = getSearch(algorithm);
-    // Initialize results object
-    results = {};
+    // clear out anything left over in the queue from previous runs
+    search.clearQueue();
     // Run search
     if (algorithm === 'Breadth' || algorithm === 'Depth') {
         results.solutionTree =  runSearch(input, goal, solutionTree,
@@ -56,11 +57,15 @@ var runSearch = function(input, goal, solutionTree,
         nextNodes = successorFunction(currentKey, solutionTree);
         nextNodes.map(function(node) {
             console.log('mapping new nodes to solution tree. node.whatChild = ' + node.whatChildIsThis);
-            if (node.key !== '') {
+            if (node.key !== '' && solutionTree[node.key] === undefined) {
                 solutionTree = addToSolutionTree(node, currentKey, solutionTree);
+                console.log('adding node');
                 search.addNode(node.key);
+                console.log('end addNode');
             }
+            console.log('end add key');
         });
+        console.log('end map');
         currentKey = search.getNextNode();
         currentDepth = solutionTree[currentKey].depth;
     }

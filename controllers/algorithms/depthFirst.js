@@ -1,11 +1,15 @@
-var stack = [];
+var queue = [];
 
 exports.addNode = function (key) {
-    stack.push(key);
+    queue.push(key);
     console.log('DFS - adding key');
 };
 
 exports.getNextNode = function () {
-    console.log('DFS - removing from stack');
-    return stack.pop();
+    console.log('DFS - removing from queue');
+    return queue.pop();
+};
+
+exports.clearQueue = function() {
+    queue = [];
 };

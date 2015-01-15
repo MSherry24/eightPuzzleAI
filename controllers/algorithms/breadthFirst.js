@@ -9,3 +9,7 @@ exports.getNextNode = function () {
     console.log('BFS - removing from queue');
     return queue.shift();
 };
+
+exports.clearQueue = function() {
+    queue = [];
+};
