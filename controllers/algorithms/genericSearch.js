@@ -15,7 +15,7 @@ var getSearch = function(algorithm) {
     console.log('getSearch');
     if (algorithm === 'Breadth') {
         return breadth;
-    } else if (algorithm === 'Depth') {
+    } else if (algorithm === 'Depth' || algorithm === 'Iterative') {
         return depth;
     }
 };
@@ -40,6 +40,11 @@ exports.run = function(input, goal, algorithm, rootNode,
                                             addToSolutionTree, successorFunction,
                                             search, '');
     }
+    if (algorithm === 'Iterative') {
+        results.solutionTree = runIterativeDeepening(input, goal, solutionTree,
+                                                    addToSolutionTree, successorFunction,
+                                                    search);
+    }
     console.log('returning results');
     return results;
 };
@@ -53,24 +58,28 @@ var runSearch = function(input, goal, solutionTree,
     currentKey = input;
     currentDepth = 0;
     while (currentKey !== goal && (maxDepth === '' || currentDepth < maxDepth)) {
-        console.log('current key = ' + currentKey );
         nextNodes = successorFunction(currentKey, solutionTree);
         nextNodes.map(function(node) {
-            console.log('mapping new nodes to solution tree. node.whatChild = ' + node.whatChildIsThis);
             if (node.key !== '' && solutionTree[node.key] === undefined) {
                 solutionTree = addToSolutionTree(node, currentKey, solutionTree);
-                console.log('adding node');
                 search.addNode(node.key);
-                console.log('end addNode');
             }
-            console.log('end add key');
         });
-        console.log('end map');
         currentKey = search.getNextNode();
         currentDepth = solutionTree[currentKey].depth;
     }
-    console.log ('current Key = ' + currentKey);
-    console.log (' goal = ' + goal);
-    console.log ('success? - ' + (currentKey === goal));
-    return solutionTree;
+    // For the case of Iterative deepening, it's possible that the goal state was not found, but
+    // the loop ended.  In this case, false is returned as a signal to runIterativeDeepening() that
+    // it needs to run again with a higher maxDepth value.
+    if (currentKey !== goal) { return false; }
+    // Otherwise, the solutionTree is returned.
+    else { return solutionTree; }
 };
+
+var runIterativeDeepening = function(input, goal, solutionTree,
+                                     addToSolutionTree, successorFunction,
+                                     search) {
+    "use strict";
+
+    return solutionTree;
+}

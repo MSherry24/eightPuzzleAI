@@ -3,32 +3,6 @@
  *
  */
 var search = require('../algorithms/genericSearch');
-exports.run = function (input, goal, algorithm) {
-    "use strict";
-    var results, rootNode;
-    console.log('eightPuzzle.run');
-    // create root Node
-    rootNode = {
-        upChild: '',
-        leftChild: '',
-        downChild: '',
-        rightChild: '',
-        parent: 'root',
-        zeroIndex: getFirstZeroIndex(input),
-        whatChildIsThis: 'root',
-        depth: 0
-    };
-    console.log('first zero index = ' + rootNode.zeroIndex);
-    results = search.run(input, goal, algorithm, rootNode,
-                            addToSolutionTree, successorFunction);
-
-    // Add the user's input and algorithm choice to the results object so that it can be
-    // displayed back to the user along with the puzzle results
-    results.input = input;
-    results.algorithm = algorithm;
-    console.log('eight puzzle run returning');
-    return results;
-};
 
 var getFirstZeroIndex = function (input) {
     "use strict";
@@ -154,6 +128,28 @@ var successorFunction = function (currentKey, solutionTree) {
     nextNodes.push(rightChild);
     console.log('end successorFunction');
     return nextNodes;
+};
+
+exports.run = function (input, goal, algorithm) {
+    "use strict";
+    var results, rootNode;
+    console.log('eightPuzzle.run');
+    // create root Node
+    rootNode = {
+        upChild: '',
+        leftChild: '',
+        downChild: '',
+        rightChild: '',
+        parent: 'root',
+        zeroIndex: getFirstZeroIndex(input),
+        whatChildIsThis: 'root',
+        depth: 0
+    };
+    console.log('first zero index = ' + rootNode.zeroIndex);
+    results = search.run(input, goal, algorithm, rootNode,
+                        addToSolutionTree, successorFunction);
+    console.log('eight puzzle run returning');
+    return results;
 };
 
 

@@ -52,9 +52,10 @@ exports.run = function (req) {
         puzzleOut = puzzle.run(input, goal, algorithm);
         endTime = new Date().getTime();
         res.runTime = (endTime - startTime) / 1000;
-        res.solutionPath = getSolutionPath(goal, res.solutionTree);
+        res.solutionPath = getSolutionPath(goal, puzzleOut.solutionTree);
     }
-    console.log('solutionPath = ' + puzzleOut.solutionTree);
+    res.input = input;
+    res.algorithm = algorithm;
     return res;
 };
 

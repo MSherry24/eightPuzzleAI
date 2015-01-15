@@ -157,30 +157,30 @@ var postToRunRoute = function () {
             var runInfo = "Run # " + runNumber + " results:"
                             + "<br>";
             var results = JSON.parse(data);
-            /*
-                runInfo += "Input: " + results.info.input
-                + " -- Algorithm: " + results.info.algorithm
+
+                runInfo += "Input: " + makeInputPretty(results.input)
+                + " -- Algorithm: " + results.algorithm
                 + "<br>"
+            /*
                 + "Nodes Created: " + results.info.nodesCreated
                 + "<br>"
                 + "Nodes Examined: " + results.info.nodesExamined
                 + "<br>"
-                + "Steps in Solution: " + results.info.lengthOfSolution
+                */
+                + "Steps in Solution: " + results.solutionPath.length
                 + "<br>"
-                + "Total Running Time: " + results.info.runTime + " seconds"
+                + "Total Running Time: " + results.runTime + " seconds"
                 + "<br>";
-            if (results.info.error === "" || results.info.error === undefined) {
-                states = results.info.solutionPath.map(JSON.parse).reverse();
+            if (results.error === "" || results.error === undefined) {
+                states = results.solutionPath.map(JSON.parse).reverse();
                 currentState = states.length - 1;
                 showFinalState();
             } else {
                 runInfo += 'Error during analysis.  Error message - '
-                + results.info.error
-                + '<br>';
+                        + results.error
+                        + '<br>';
             }
             runInfo += '<br>';
-            */
-            var solutionPath = getSolutionPath(JSON.stringify(goal), results.solutionTree);
             $("#output").prepend(runInfo);
             // Increment run number so that the next puzzle sent will have a different ID in the output window
             runNumber++;
@@ -190,7 +190,17 @@ var postToRunRoute = function () {
         });
 };
 
-
+var makeInputPretty = function(input) {
+    var prettyInput, range, inputObject;
+    prettyInput = '';
+    inputObject = JSON.parse(input);
+    range = Array.apply(undefined, Array(9)).map(function (_, i) {return i + 1;});
+    range.map(function(e) {
+        var index = '_' + e.toString();
+        prettyInput += inputObject[index] + ' ';
+    });
+    return prettyInput;
+}
 
 $(document).ready(function() {
     // Initialize button functions and global variables.
