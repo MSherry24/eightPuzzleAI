@@ -52,7 +52,12 @@ exports.run = function (req) {
         puzzleOut = puzzle.run(input, goal, algorithm);
         endTime = new Date().getTime();
         res.runTime = (endTime - startTime) / 1000;
-        res.solutionPath = getSolutionPath(goal, puzzleOut.solutionTree);
+        if (puzzleOut.solutionTree === undefined) {
+            res.error = 'No solution found';
+            res.solutionPath = [];
+        } else {
+            res.solutionPath = getSolutionPath(goal, puzzleOut.solutionTree);
+        }
     }
     res.input = input;
     res.algorithm = algorithm;

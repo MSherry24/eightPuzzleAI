@@ -9,8 +9,8 @@ var getFirstZeroIndex = function (input) {
     // This is called at the beginning of an algorithm to determine which spot in the puzzle
     // is the open spot.  After this is determined, all future puzzle states will have their zero index
     // cached as a part of their object that is stored in the solutionTree.
-    console.log('getFirstZeroIndex');
-    console.log('input = ' + input);
+    //console.log('getFirstZeroIndex');
+    //console.log('input = ' + input);
     var inputObject = JSON.parse(input);
     if (inputObject._1 === '0') { return '_1'; }
     if (inputObject._2 === '0') { return '_2'; }
@@ -27,10 +27,10 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
     "use strict";
     // This function only takes a new node and adds it to a solutionTree object.  The only reason
     // this is broken out into its own function is because it is called by multiple algorithms.
-    console.log('addToSolutionTree');
-    console.log('newNodeObject = ' + newNodeObject);
-    console.log('currentKey = ' + currentKey);
-    console.log('solutionTree = ' + solutionTree);
+    //console.log('addToSolutionTree');
+    //console.log('newNodeObject = ' + newNodeObject);
+    //console.log('currentKey = ' + currentKey);
+    //console.log('solutionTree = ' + solutionTree);
     solutionTree[newNodeObject.key] = {
         upChild: '',
         leftChild: '',
@@ -39,9 +39,9 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
         parent: currentKey,
         zeroIndex: newNodeObject.zeroIndex,
         whatChildIsThis: newNodeObject.whatChildIsThis,
-        depth: solutionTree[currentKey].depth + 1
+        depth: ''
     };
-    console.log('end addToSolutionTree');
+    console.log('key depth = ' + solutionTree[newNodeObject.key].depth);
     return solutionTree;
 };
 
@@ -54,13 +54,13 @@ var successorFunction = function (currentKey, solutionTree) {
     // if you slide the tile to the right of the zero index left.  In this case, the function calls swap()
     // with inputs of '_2' and '_4' and sets them to 'rightChild' and 'downChild' respectively.
     var upChild, downChild, rightChild, leftChild, nextNodes, swap, zeroIndex;
-    console.log('successorFunction');
+    //console.log('successorFunction');
     swap = function (currentKey, zeroIndex, swapIndex) {
         "use strict";
         // Used by getNextNodes() to generate a new puzzle state by swapping the open spot (represented by a "0")
         // with the provided swap index.
         var newNode, currentNode;
-        console.log('swap');
+        //console.log('swap');
         newNode = JSON.parse(currentKey);
         currentNode = JSON.parse(currentKey);
         newNode[zeroIndex] = currentNode[swapIndex];
@@ -73,7 +73,7 @@ var successorFunction = function (currentKey, solutionTree) {
     leftChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
     downChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
     rightChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
-    console.log('successorFunction zeroIndex = ' + zeroIndex);
+    //console.log('successorFunction zeroIndex = ' + zeroIndex);
     if (zeroIndex === '_1') {
         rightChild = swap(currentKey, zeroIndex, '_2');
         downChild = swap(currentKey, zeroIndex, '_4');
@@ -126,14 +126,14 @@ var successorFunction = function (currentKey, solutionTree) {
     nextNodes.push(leftChild);
     nextNodes.push(downChild);
     nextNodes.push(rightChild);
-    console.log('end successorFunction');
+    //console.log('end successorFunction');
     return nextNodes;
 };
 
 exports.run = function (input, goal, algorithm) {
     "use strict";
     var results, rootNode;
-    console.log('eightPuzzle.run');
+    //console.log('eightPuzzle.run');
     // create root Node
     rootNode = {
         upChild: '',

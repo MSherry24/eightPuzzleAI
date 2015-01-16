@@ -54,32 +54,55 @@ var runSearch = function(input, goal, solutionTree,
                          search, maxDepth) {
     "use strict";
     var currentKey, nextNodes, currentDepth;
-    console.log('genericSearch.runSearch');
+    //console.log('genericSearch.runSearch');
     currentKey = input;
     currentDepth = 0;
-    while (currentKey !== goal && (maxDepth === '' || currentDepth < maxDepth)) {
+    while (currentKey !== goal && currentKey !== undefined) {
         nextNodes = successorFunction(currentKey, solutionTree);
         nextNodes.map(function(node) {
             if (node.key !== '' && solutionTree[node.key] === undefined) {
                 solutionTree = addToSolutionTree(node, currentKey, solutionTree);
-                search.addNode(node.key);
+                solutionTree[node.key].depth++;
+                if (maxDepth === '' || currentDepth > maxDepth) {
+                    console.log('adding node');
+                    search.addNode(node.key);
+                }
             }
         });
         currentKey = search.getNextNode();
-        currentDepth = solutionTree[currentKey].depth;
+        console.log('currentKey = ' + currentKey);
+
+        if (currentKey !== undefined) {
+            console.log('solutionTree[currentKey].depth = ' + solutionTree[currentKey].depth);
+            currentDepth = solutionTree[currentKey].depth;
+        }
+        console.log('currentDepth = ' + currentDepth + ' maxDepth = ' + maxDepth);
     }
     // For the case of Iterative deepening, it's possible that the goal state was not found, but
-    // the loop ended.  In this case, false is returned as a signal to runIterativeDeepening() that
-    // it needs to run again with a higher maxDepth value.
-    if (currentKey !== goal) { return false; }
+    // the loop ended.  In this case, maxDepth is equal to currentDepth when the loop ended, and
+    // false is returned as a signal to runIterativeDeepening() that it needs to run again with
+    // a higher maxDepth value.  If currentDepth is less than maxDepth, the algorithm ran out of
+    // nodes to examine before it reached the maxDepth, so all reachable states have been examined.
+    // If all possible states have been examined and no solution is found, undefined is returned.
     // Otherwise, the solutionTree is returned.
-    else { return solutionTree; }
+    if ( currentKey === goal ) {return solutionTree; }
+    else if ( currentDepth = maxDepth ) { return false; }
+    else { return undefined;  }
 };
 
 var runIterativeDeepening = function(input, goal, solutionTree,
                                      addToSolutionTree, successorFunction,
                                      search) {
     "use strict";
-
-    return solutionTree;
+    var solution, depth;
+    solution = false;
+    depth = 0;
+    while (solution === false) {
+        depth++;
+        //console.log('next depth = ' + depth);
+        solution = runSearch(input, goal, solutionTree,
+                             addToSolutionTree, successorFunction,
+                             search, depth);
+    }
+    return solution;
 }
