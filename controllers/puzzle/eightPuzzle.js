@@ -41,7 +41,7 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
         whatChildIsThis: newNodeObject.whatChildIsThis,
         depth: ''
     };
-    console.log('key depth = ' + solutionTree[newNodeObject.key].depth);
+    //console.log('key depth = ' + solutionTree[newNodeObject.key].depth);
     return solutionTree;
 };
 

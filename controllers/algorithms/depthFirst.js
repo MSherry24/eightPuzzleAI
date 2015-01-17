@@ -11,6 +11,10 @@ exports.getNextNode = function () {
     else                  { return undefined; }
 };
 
-exports.clearQueue = function() {
+exports.clearQueue = function () {
     queue = [];
 };
+
+exports.isEmpty = function () {
+    return queue.length === 0;
+}
