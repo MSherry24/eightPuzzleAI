@@ -25,7 +25,8 @@ var runSearch = function (input, goal, solutionTree,
                          nodesVisited, nodesCreated,
                          search, maxDepth) {
         "use strict";
-        var currentKey, nextNodes, currentDepth, maxDepthReached;
+        var currentKey, nextNodes, currentDepth, maxDepthReached, isNotIterativeDeepening;
+        isNotIterativeDeepening = maxDepth === '';
         maxDepthReached = maxDepth === '';
         currentKey = input;
         currentDepth = 0;
@@ -35,11 +36,11 @@ var runSearch = function (input, goal, solutionTree,
             nextNodes.map(function (node) {
                 if (node.key !== ''
                         && (solutionTree[node.key] === undefined
-                        || (solutionTree[node.key].depth > currentDepth && maxDepth !== ''))) {
+                        || (isNotIterativeDeepening && solutionTree[node.key].depth > currentDepth))) {
                     solutionTree = addToSolutionTree(node, currentKey, solutionTree);
                     solutionTree[node.key].depth = solutionTree[currentKey].depth + 1;
                     nodesCreated++;
-                    if (maxDepth === '' || solutionTree[node.key].depth < maxDepth) {
+                    if (isNotIterativeDeepening || solutionTree[node.key].depth < maxDepth) {
                         search.addNode(node.key);
                     }
                 }

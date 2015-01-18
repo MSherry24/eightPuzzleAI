@@ -1,8 +1,3 @@
-/**
- * Created by Mike on 1/10/2015.
- */
-var eightPuzzle = require('./eightPuzzle');
-
 /*
  * Generic Puzzle is the main driver for the puzzle solver.  It takes an input, a goal and a puzzle type from
  * the UI.  Depending on the input puzzle type, it will pass the input and the goal to the correct puzzle library.
@@ -27,6 +22,8 @@ var eightPuzzle = require('./eightPuzzle');
  *
  *       }
  */
+var eightPuzzle = require('./eightPuzzle');
+
 exports.run = function (req) {
     var puzzleType, puzzle,
         algorithm, input,

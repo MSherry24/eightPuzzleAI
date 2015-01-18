@@ -27,10 +27,6 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
     "use strict";
     // This function only takes a new node and adds it to a solutionTree object.  The only reason
     // this is broken out into its own function is because it is called by multiple algorithms.
-    //console.log('addToSolutionTree');
-    //console.log('newNodeObject = ' + newNodeObject);
-    //console.log('currentKey = ' + currentKey);
-    //console.log('solutionTree = ' + solutionTree);
     solutionTree[newNodeObject.key] = {
         upChild: '',
         leftChild: '',
@@ -45,6 +41,20 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
     return solutionTree;
 };
 
+var swap = function (currentKey, zeroIndex, swapIndex) {
+    "use strict";
+    // Used by getNextNodes() to generate a new puzzle state by swapping the open spot (represented by a "0")
+    // with the provided swap index.
+    var newNode, currentNode;
+    //console.log('swap');
+    newNode = JSON.parse(currentKey);
+    currentNode = JSON.parse(currentKey);
+    newNode[zeroIndex] = currentNode[swapIndex];
+    newNode[swapIndex] = currentNode[zeroIndex];
+    // The newly generated puzzle state and its zero index are returned
+    return { key: JSON.stringify(newNode), zeroIndex: swapIndex };
+};
+
 var successorFunction = function (currentKey, solutionTree) {
     "use strict";
     // This function takes a puzzle state (or "Node") and its zero index as input.  Depending on
@@ -53,27 +63,12 @@ var successorFunction = function (currentKey, solutionTree) {
     // There are only two future puzzle states, one if you move the tile below the zero index up, and one
     // if you slide the tile to the right of the zero index left.  In this case, the function calls swap()
     // with inputs of '_2' and '_4' and sets them to 'rightChild' and 'downChild' respectively.
-    var upChild, downChild, rightChild, leftChild, nextNodes, swap, zeroIndex;
-    //console.log('successorFunction');
-    swap = function (currentKey, zeroIndex, swapIndex) {
-        "use strict";
-        // Used by getNextNodes() to generate a new puzzle state by swapping the open spot (represented by a "0")
-        // with the provided swap index.
-        var newNode, currentNode;
-        //console.log('swap');
-        newNode = JSON.parse(currentKey);
-        currentNode = JSON.parse(currentKey);
-        newNode[zeroIndex] = currentNode[swapIndex];
-        newNode[swapIndex] = currentNode[zeroIndex];
-        // The newly generated puzzle state and its zero index are returned
-        return { key: JSON.stringify(newNode), zeroIndex: swapIndex };
-    };
+    var upChild, downChild, rightChild, leftChild, nextNodes, zeroIndex;
     zeroIndex = solutionTree[currentKey].zeroIndex;
     upChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
     leftChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
     downChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
     rightChild = { key: '', zeroIndex: '', whatChildIsThis: '' };
-    //console.log('successorFunction zeroIndex = ' + zeroIndex);
     if (zeroIndex === '_1') {
         rightChild = swap(currentKey, zeroIndex, '_2');
         downChild = swap(currentKey, zeroIndex, '_4');
