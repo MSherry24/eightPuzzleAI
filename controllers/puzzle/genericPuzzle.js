@@ -58,6 +58,7 @@ exports.run = function (req) {
             res.solutionPath = getSolutionPath(goal, puzzleOut.solutionTree);
             res.nodesCreated = puzzleOut.nodesCreated;
             res.nodesVisited = puzzleOut.nodesVisited;
+            res.queueMax = puzzleOut.queueMax;
         }
     }
     res.input = input;

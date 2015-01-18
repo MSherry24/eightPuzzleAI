@@ -122,6 +122,7 @@ exports.run = function (input, goal, algorithm, rootNode,
     solution.solutionTree = results.solutionTree;
     solution.nodesVisited = results.nodesVisited;
     solution.nodesCreated = results.nodesCreated;
+    solution.queueMax = breadth.getMaxLength();
     console.log('returning results');
     return solution;
 };

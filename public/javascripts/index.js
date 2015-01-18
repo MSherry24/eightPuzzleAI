@@ -164,6 +164,8 @@ var postToRunRoute = function () {
                 + "<br>"
                 + "Nodes Visited: " + results.nodesVisited
                 + "<br>"
+                + "Max Queue Length: " + results.queueMax
+                + "<br>"
                 + "Steps in Solution: " + results.solutionPath.length
                 + "<br>"
                 + "Total Running Time: " + results.runTime + " seconds"

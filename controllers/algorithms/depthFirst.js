@@ -1,20 +1,20 @@
-var queue = [];
+var breadth = require('./breadthFirst');
+var maxLength;
 
-exports.addNode = function (key) {
-    queue.push(key);
-    //console.log('DFS - adding key');
-};
+exports.getMaxLength = function () { "use strict"; return breadth.getMaxLength(); };
+exports.addNode = function (key) { "use strict"; breadth.addNode(key); };
+exports.clearQueue = function () { "use strict"; breadth.clearQueue(); };
+exports.isEmpty = function () { "use strict"; breadth.isEmpty(); };
 
 exports.getNextNode = function () {
-    //console.log('DFS - removing from queue');
-    if (queue.length > 0) { return queue.pop(); }
-    else                  { return undefined; }
+    "use strict";
+    var queue, result;
+    queue = breadth.getQueue();
+    result = (queue.length > 0) ? queue.pop() : undefined;
+    breadth.setQueue(queue);
+    return result;
 };
 
-exports.clearQueue = function () {
-    queue = [];
-};
 
-exports.isEmpty = function () {
-    return queue.length === 0;
-}
+
+
