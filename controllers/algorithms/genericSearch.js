@@ -69,7 +69,7 @@ var runIterativeDeepening = function (input, goal, solutionTree,
                                      addToSolutionTree, successorFunction,
                                      rootNode, search) {
         "use strict";
-        var results, solution, depth, nodesVistitedTally, nodesCreatedTally;
+        var results, depth, nodesVistitedTally, nodesCreatedTally;
         nodesVistitedTally = 0;
         nodesCreatedTally = 0;
         results = {solutionTree: false, nodesCreated: nodesCreatedTally, nodesVisited: nodesVistitedTally};
