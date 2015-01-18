@@ -7,15 +7,15 @@ var setState = function () {
     "use strict";
     // Sets the numbers that appear in the "State" section of the index page
     if (currentState !== null) {
-        $('#stateBox1').html(states[currentState]._1);
-        $('#stateBox2').html(states[currentState]._2);
-        $('#stateBox3').html(states[currentState]._3);
-        $('#stateBox4').html(states[currentState]._4);
-        $('#stateBox5').html(states[currentState]._5);
-        $('#stateBox6').html(states[currentState]._6);
-        $('#stateBox7').html(states[currentState]._7);
-        $('#stateBox8').html(states[currentState]._8);
-        $('#stateBox9').html(states[currentState]._9);
+        $('#stateBox1').html(JSON.parse(states[currentState].node)._1);
+        $('#stateBox2').html(JSON.parse(states[currentState].node)._2);
+        $('#stateBox3').html(JSON.parse(states[currentState].node)._3);
+        $('#stateBox4').html(JSON.parse(states[currentState].node)._4);
+        $('#stateBox5').html(JSON.parse(states[currentState].node)._5);
+        $('#stateBox6').html(JSON.parse(states[currentState].node)._6);
+        $('#stateBox7').html(JSON.parse(states[currentState].node)._7);
+        $('#stateBox8').html(JSON.parse(states[currentState].node)._8);
+        $('#stateBox9').html(JSON.parse(states[currentState].node)._9);
     }
 };
 
@@ -172,9 +172,10 @@ var postToRunRoute = function () {
                 + "Total Running Time: " + results.runTime + " seconds"
                 + "<br>";
             if (results.error === "" || results.error === undefined) {
-                states = results.solutionPath.map(JSON.parse).reverse();
+                states = results.solutionPath.reverse();
                 currentState = states.length - 1;
-                showFinalState();
+                showFirstState();
+                printSolutionSteps();
             } else {
                 runInfo += 'Error during analysis.  Error message - '
                         + results.error
@@ -200,7 +201,34 @@ var makeInputPretty = function(input) {
         prettyInput += inputObject[index] + ' ';
     });
     return prettyInput;
-}
+};
+
+var setAlgorithmText = function() {
+    var algorithmVal;
+    algorithmVal = $('input[name=algorithm]:checked').closest('label').text();
+    alrorithmText = '';
+    switch(algorithmVal) {
+        case 'Breadth':
+            $('#AlgorithmName').html('Breadth First Search');
+            break;
+        case 'Depth':
+            $('#AlgorithmName').html('Depth First Search');
+            break;
+        case 'Iterative':
+            $('#AlgorithmName').html('Iterative Depth First Search');
+            break;
+    }
+};
+
+var printSolutionSteps = function() {
+    var steps;
+    steps = '';
+    states.forEach(function(step) {
+        steps += step.whatChild;
+        steps += ' ';
+    })
+    $('#outputTrace').html(steps);
+};
 
 $(document).ready(function() {
     // Initialize button functions and global variables.
@@ -210,10 +238,12 @@ $(document).ready(function() {
     $('#firstState').on('click', showFirstState);
     $('#lastState').on('click', showFinalState);
     $('#inputRadioButtons').on('change', setInput);
+    $('#algBtnGroup').on('change', setAlgorithmText);
     $('#submitButton').show();
     $('#loadingContainer').hide();
     states = [];
     currentState = 0;
     runNumber = 1;
     setInput();
+    setAlgorithmText();
 });

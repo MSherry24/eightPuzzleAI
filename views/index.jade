@@ -66,19 +66,23 @@ block content
             input(type="radio", name="algorithm", id="depthFirst", autocomplete="off")
           label.btn.btn-default Iterative
             input(type="radio", name="algorithm", id="iterativeDeepening", autocomplete="off")
-          label.btn.btn-default Greedy
-            input(type="radio", name="algorithm", id="greedyBestFirst", autocomplete="off")
-          label.btn.btn-default A* Tiles
-            input(type="radio", name="algorithm", id="aStarTiles", autocomplete="off")
-          label.btn.btn-default A* Manhattan
-            input(type="radio", name="algorithm", id="aStarManhattan", autocomplete="off")
+          //label.btn.btn-default Greedy
+          //  input(type="radio", name="algorithm", id="greedyBestFirst", autocomplete="off")
+          //label.btn.btn-default A* Tiles
+          //  input(type="radio", name="algorithm", id="aStarTiles", autocomplete="off")
+          //label.btn.btn-default A* Manhattan
+          //  input(type="radio", name="algorithm", id="aStarManhattan", autocomplete="off")
         br
         br
+        p.row.text-info.text-center#AlgorithmName
         br
         div.row.text-center
           button.btn.btn-primary.btn-lg#submitButton(type="button") Solve Puzzle
           div#loadingContainer
-            img(src="/images/jake1.gif", style="height:100px; width:100px")
+            div
+              img(src="/images/jake1.gif", style="height:100px; width:100px")
+            div
+              p.text-info.text-center Fetching the answer
 
       div.col-xs-3.text-center
         h2.row State
@@ -103,6 +107,8 @@ block content
     br
     br
     div.row
-      div.col-xs-12
+      div.col-xs-6
         div.well#output
+      div.col-xs-6
+        div.well#outputTrace
 

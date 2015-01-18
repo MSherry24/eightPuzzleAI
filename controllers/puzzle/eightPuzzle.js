@@ -94,8 +94,8 @@ var successorFunction = function (currentKey, solutionTree) {
     }
     if (zeroIndex === '_5') {
         upChild = swap(currentKey, zeroIndex, '_2');
-        leftChild = swap(currentKey, zeroIndex, '_6');
-        rightChild = swap(currentKey, zeroIndex, '_4');
+        leftChild = swap(currentKey, zeroIndex, '_4');
+        rightChild = swap(currentKey, zeroIndex, '_6');
         downChild = swap(currentKey, zeroIndex, '_8');
     }
     if (zeroIndex === '_6') {
@@ -142,7 +142,7 @@ exports.run = function (input, goal, algorithm) {
         rightChild: '',
         parent: 'root',
         zeroIndex: getFirstZeroIndex(input),
-        whatChildIsThis: 'root',
+        whatChildIsThis: 'start',
         depth: 0
     };
     console.log('first zero index = ' + rootNode.zeroIndex);
