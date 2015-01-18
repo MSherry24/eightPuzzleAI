@@ -145,10 +145,8 @@ exports.run = function (input, goal, algorithm) {
         whatChildIsThis: 'start',
         depth: 0
     };
-    console.log('first zero index = ' + rootNode.zeroIndex);
     results = search.run(input, goal, algorithm, rootNode,
                         addToSolutionTree, successorFunction);
-    console.log('eight puzzle run returning');
     return results;
 };
 

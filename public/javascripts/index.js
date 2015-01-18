@@ -157,16 +157,13 @@ var postToRunRoute = function () {
             var runInfo = "Run # " + runNumber + " results:"
                             + "<br>";
             var results = JSON.parse(data);
-
                 runInfo += "Input: " + makeInputPretty(results.input)
                 + " -- Algorithm: " + results.algorithm
                 + "<br>"
-            /*
-                + "Nodes Created: " + results.info.nodesCreated
+                + "Nodes Created: " + results.nodesCreated
                 + "<br>"
-                + "Nodes Examined: " + results.info.nodesExamined
+                + "Nodes Visited: " + results.nodesVisited
                 + "<br>"
-                */
                 + "Steps in Solution: " + results.solutionPath.length
                 + "<br>"
                 + "Total Running Time: " + results.runTime + " seconds"

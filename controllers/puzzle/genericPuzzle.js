@@ -30,9 +30,9 @@ var eightPuzzle = require('./eightPuzzle');
 exports.run = function (req) {
     var puzzleType, puzzle,
         algorithm, input,
-        goal, solution,
+        goal, puzzleOut,
         startTime, endTime,
-        puzzleOut, res;
+        res;
     console.log('genericPuzzle.run');
     puzzle = '';
     res = {};
@@ -44,7 +44,6 @@ exports.run = function (req) {
     if (puzzleType === 'eightPuzzle') {
         puzzle =  eightPuzzle;
     }
-
     if (puzzle === '') {
         res.error = 'invalid request';
     } else {
@@ -57,6 +56,8 @@ exports.run = function (req) {
             res.solutionPath = [];
         } else {
             res.solutionPath = getSolutionPath(goal, puzzleOut.solutionTree);
+            res.nodesCreated = puzzleOut.nodesCreated;
+            res.nodesVisited = puzzleOut.nodesVisited;
         }
     }
     res.input = input;
@@ -71,7 +72,6 @@ var getSolutionPath = function (goal, solutionTree) {
     // the node it finds to an array and this array is eventually passed back to the UI so that the
     // user can step through a solution from beginning to end.
     var solutionPath, currentNode;
-    console.log('getSolutionPath');
     solutionPath = [];
     currentNode = goal;
     solutionPath.push({node: goal, whatChild: solutionTree[goal].whatChildIsThis});
