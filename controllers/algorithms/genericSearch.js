@@ -31,15 +31,32 @@ var runSearch = function (input, goal, solutionTree,
         currentKey = input;
         currentDepth = 0;
         while (currentKey !== goal && currentKey !== undefined) {
-            //console.log('nodesCreate = ' + nodesCreated + ' nodesVisited = ' + nodesVisited);
+            /*
+             *  The first thing to check is if the current key is the goal, and if it is, return it.
+             *  Next, check to see if the currentKey is undefined.  This is a signal that the queue is empty and
+             *  no solution was found.  In which case, the while loop should end.
+             */
             nextNodes = successorFunction(currentKey, solutionTree);
+            /*
+             * The successorFunction returns an array of the next possible nodes.  An anonymous function is
+             * then mapped to each node in the array.
+             */
             nextNodes.map(function (node) {
+                // If the key is an empty string, the anonymous function determined that it is invalid for some reason
                 if (node.key !== ''
+                        // If the key is not already in the tree, continue.
                         && (solutionTree[node.key] === undefined
+                        // If the key is already in the tree, only continue if this is an iterative deepening
+                        // search and the depth of the current node is less than when it was examined previously
                         || (isNotIterativeDeepening && solutionTree[node.key].depth > currentDepth))) {
+                    // If all of the previous checks passed, add the node to the solution tree hash map and
+                    // increase its depth by one (compared to its parent node)
                     solutionTree = addToSolutionTree(node, currentKey, solutionTree);
                     solutionTree[node.key].depth = solutionTree[currentKey].depth + 1;
                     nodesCreated++;
+                    // If this is not an iterative deepening search, add the node to the queue
+                    // If it is an iterative deepening search, only add the node if its depth doesn't
+                    // exceed the maximum depth allowed by this iteration.
                     if (isNotIterativeDeepening || solutionTree[node.key].depth < maxDepth) {
                         search.addNode(node.key);
                     }
