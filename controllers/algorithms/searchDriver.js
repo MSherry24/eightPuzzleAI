@@ -44,10 +44,8 @@ var runSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search, max
                     // If the key is already in the tree, only continue if this is an iterative deepening
                     // search and the depth of the current node is less than when it was examined previously
                     || (!isNotIterativeDeepening && solutionTree[node.key].depth > currentDepth))) {
-                // If all of the previous checks passed, add the node to the solution tree hash map and
-                // increase its depth by one (compared to its parent node)
-                solutionTree = puzzleFunctions.addToSolutionTree(node, currentKey, solutionTree);
-                solutionTree[node.key].depth = solutionTree[currentKey].depth + 1;
+                // If all of the previous checks passed, add the node to the solution tree hash map
+                solutionTree = puzzleFunctions.addToSolutionTree(node, currentKey, solutionTree, puzzleFunctions.evaluateHeuristic);
                 nodesCreated++;
                 // If this is not an iterative deepening search, add the node to the queue
                 // If it is an iterative deepening search, only add the node if its depth doesn't
@@ -65,13 +63,17 @@ var runSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search, max
             maxDepthReached = true;
         }
         // Get the next node from the queue
-        currentKey = search.getNextNode();
+        currentKey = search.getNextNode(solutionTree);
         currentDepth = solutionTree[currentKey] === undefined ? currentDepth : solutionTree[currentKey].depth;
     }
     // If the goal state was found, return the solution tree and the information about nodes created/visited
-    if (currentKey === puzzleInfo.goal) { return {solutionTree: solutionTree,
-        nodesCreated: nodesCreated,
-        nodesVisited: nodesVisited}; }
+    if (currentKey === puzzleInfo.goal) {
+        return {
+            solutionTree: solutionTree,
+            nodesCreated: nodesCreated,
+            nodesVisited: nodesVisited
+        };
+    }
     // If max depth is not reached before the queue empties, maxDepthReached will still be false.  This shows that
     // all reachable states were checked before the max depth was reached, so another round of iterative deepending
     // will also not find a solution.  Therefore, no solution is possible.
@@ -110,7 +112,6 @@ var runIterativeDeepening = function (puzzleInfo, puzzleFunctions, solutionTree,
     return {solutionTree: solutionTree, nodesCreated: nodesCreatedTally, nodesVisited: nodesVisitedTally};
 };
 
-// Returns solution Tree
 exports.run = function (puzzleInfo, puzzleFunctions) {
     "use strict";
     var solutionTree, search, results, solution;
@@ -125,11 +126,10 @@ exports.run = function (puzzleInfo, puzzleFunctions) {
     // clear out anything left over in the queue from previous runs
     search.clearQueue();
     // Run search
-    if (puzzleInfo.algorithm === 'Breadth' || puzzleInfo.algorithm === 'Depth') {
-        results =  runSearch(puzzleInfo, puzzleFunctions, solutionTree, search, '');
-    }
     if (puzzleInfo.algorithm === 'Iterative') {
         results = runIterativeDeepening(puzzleInfo, puzzleFunctions, solutionTree, search);
+    } else {
+        results =  runSearch(puzzleInfo, puzzleFunctions, solutionTree, search, '');
     }
     // return results
     solution.solutionTree = results.solutionTree;

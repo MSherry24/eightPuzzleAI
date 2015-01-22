@@ -3,6 +3,8 @@
  *
  */
 var search = require('../algorithms/searchDriver');
+var h1 = require('./misplacedTiles');
+var h2 = require('./manhattanDistance');
 
 var getFirstZeroIndex = function (input) {
     "use strict";
@@ -23,10 +25,14 @@ var getFirstZeroIndex = function (input) {
     return '_9';
 };
 
-var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
+var addToSolutionTree = function (newNodeObject, currentKey, solutionTree, evaluateHeuristic) {
     "use strict";
     // This function only takes a new node and adds it to a solutionTree object.  The only reason
     // this is broken out into its own function is because it is called by multiple algorithms.
+    var heuristicScore = 0;
+    if (evaluateHeuristic !== '') {
+        heuristicScore = evaluateHeuristic(newNodeObject.key);
+    }
     solutionTree[newNodeObject.key] = {
         upChild: '',
         leftChild: '',
@@ -35,11 +41,10 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
         parent: currentKey,
         zeroIndex: newNodeObject.zeroIndex,
         whatChildIsThis: newNodeObject.whatChildIsThis,
-        depth: '',
-        h1Score: '',    //h1 = misplacedTiles
-        h2Score: ''     //h2 = manhattanDistance
+        depth: solutionTree[currentKey].depth + 1,
+        gnScore: solutionTree[currentKey].depth + 1, // g(n)
+        hnScore: heuristicScore                      // h(n)
     };
-    //console.log('key depth = ' + solutionTree[newNodeObject.key].depth);
     return solutionTree;
 };
 
@@ -129,12 +134,24 @@ var successorFunction = function (currentKey, solutionTree) {
 
 exports.run = function (puzzleInfo) {
     "use strict";
-    var results, puzzleFunctions;
+    var results, puzzleFunctions, heuristicScore, heuristic;
     //console.log('eightPuzzle.run');
     // create root Node
+    heuristicScore = 0;
+    if (puzzleInfo.algorithm === 'Greedy' || puzzleInfo.algorithm === 'A* Manhattan') {
+        heuristicScore = h2.evaluate(puzzleInfo.input);
+        heuristic = h2;
+    } else if (puzzleInfo.algorith === 'A* Tiles') {
+        heuristicScore = h1.evaluate(puzzleInfo.input);
+        heuristic = h1;
+    } else {
+        heuristicScore = '';
+        heuristic = { evaluate: '' };
+    }
     puzzleFunctions = {
         addToSolutionTree: addToSolutionTree,
-        successorFunction: successorFunction
+        successorFunction: successorFunction,
+        evaluateHeuristic: heuristic.evaluate
     };
     puzzleInfo.rootNode = {
         upChild: '',
@@ -144,13 +161,10 @@ exports.run = function (puzzleInfo) {
         parent: 'root',
         zeroIndex: getFirstZeroIndex(puzzleInfo.input),
         whatChildIsThis: 'start',
-        depth: 0
+        depth: 0,
+        hnScore: heuristicScore,
+        gnScore: 0
     };
     results = search.run(puzzleInfo, puzzleFunctions);
     return results;
 };
-
-
-
-
-

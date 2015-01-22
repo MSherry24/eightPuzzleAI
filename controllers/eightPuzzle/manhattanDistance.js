@@ -3,7 +3,7 @@
  */
 
 exports.evaluate = function (key) {
-    var keyObject, score, indexMap, idealIndex;
+    var keyObject, score, indexMap, idealIndex, e;
     indexMap = {
         _1: [2, 0],
         _2: [2, 1],
@@ -26,12 +26,12 @@ exports.evaluate = function (key) {
         8:'_4'
     };
     score = 0;
-    keyObject= JSON.parse(key);
-    for (var key in keyObject) {
+    keyObject = JSON.parse(key);
+    for (e in keyObject) {
         var currentLocation, idealLocation;
-        if(keyObject[key] !== '0') {
-            currentLocation = indexMap[key];
-            idealLocation = indexMap[idealIndex[keyObject[key]]];
+        if (keyObject[e] !== '0') {
+            currentLocation = indexMap[e];
+            idealLocation = indexMap[idealIndex[keyObject[e]]];
             score += (Math.abs(currentLocation[0] - idealLocation[0])
             + Math.abs(currentLocation[1] - idealLocation[1]));
         }

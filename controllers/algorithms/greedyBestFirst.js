@@ -1,26 +1,29 @@
-var maxLength;
-var queue = [];
+var genericSearch = require('./genericSearch');
+var globalSolutionTree;
 
-exports.getQueue = function () { "use strict"; return queue; };
-exports.setQueue = function (newQueue) { "use strict"; queue = newQueue; };
-exports.getMaxLength = function () { "use strict"; return maxLength; };
-exports.clearQueue = function () { "use strict"; queue = []; };
-exports.isEmpty = function () { "use strict"; return queue.length === 0; };
-
-exports.getNextNode = function (comparator) {
+var getSolutionTree = function () { "use strict"; return globalSolutionTree; };
+var setSolutionTree = function (x) { "use strict"; globalSolutionTree = x; };
+var comparator = function (a, b) {
     "use strict";
-    queue = queue.sort(comparator);
-    return queue.shift();
+    var tempSolutionTree = getSolutionTree();
+    if (tempSolutionTree[a].hnScore < tempSolutionTree[b].hnScore) { return -1; }
+    if (tempSolutionTree[a].hnScore > tempSolutionTree[b].hnScore) { return 1; }
+    return 0;
 };
 
-var checkMax = function () {
+exports.getMaxLength = genericSearch.getMaxLength;
+exports.getNextNode = genericSearch.getNextNode;
+exports.clearQueue = genericSearch.clearQueue;
+exports.isEmpty = genericSearch.isEmpty;
+exports.addNode = genericSearch.addNode;
+exports.getNextNode = function (solutionTree) {
     "use strict";
-    maxLength = maxLength === undefined ? 0 : maxLength;
-    maxLength = queue.length > maxLength ? queue.length : maxLength;
+    var queue, returnKey;
+    setSolutionTree(solutionTree);
+    queue = genericSearch.getQueue();
+    queue.sort(comparator);
+    returnKey = queue.shift();
+    genericSearch.setQueue(queue);
+    return returnKey;
 };
 
-exports.addNode = function (key) {
-    "use strict";
-    queue.push(key);
-    checkMax();
-};
