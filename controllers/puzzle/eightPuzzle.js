@@ -2,7 +2,7 @@
  * Created by Mike on 1/10/2015.
  *
  */
-var search = require('../algorithms/genericSearch');
+var search = require('../algorithms/searchDriver');
 
 var getFirstZeroIndex = function (input) {
     "use strict";

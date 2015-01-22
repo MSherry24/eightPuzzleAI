@@ -1,3 +1,6 @@
+var genericSearch = require('./genericSearch');
+
+/*
 var maxLength;
 var queue = [];
 
@@ -19,3 +22,12 @@ exports.addNode = function (key) {
     queue.push(key);
     checkMax();
 };
+    */
+
+exports.getQueue = genericSearch.getQueue;
+exports.setQueue = genericSearch.setQueue;
+exports.getMaxLength = genericSearch.getMaxLength;
+exports.getNextNode = genericSearch.getNextNode;
+exports.clearQueue = genericSearch.clearQueue;
+exports.isEmpty = genericSearch.isEmpty;
+exports.addNode = genericSearch.addNode;

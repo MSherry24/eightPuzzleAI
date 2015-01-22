@@ -1,20 +1,21 @@
-var breadth = require('./breadthFirst');
-var maxLength;
+var genericSearch = require('./genericSearch');
 
-exports.getMaxLength = function () { "use strict"; return breadth.getMaxLength(); };
-exports.addNode = function (key) { "use strict"; breadth.addNode(key); };
-exports.clearQueue = function () { "use strict"; breadth.clearQueue(); };
-exports.isEmpty = function () { "use strict"; breadth.isEmpty(); };
+exports.getQueue = genericSearch.getQueue;
+exports.setQueue = genericSearch.setQueue;
+exports.getMaxLength = genericSearch.getMaxLength;
+//exports.getNextNode = genericSearch.getNextNode;
+exports.clearQueue = genericSearch.clearQueue;
+exports.isEmpty = genericSearch.isEmpty;
+exports.addNode = genericSearch.addNode;
 
 exports.getNextNode = function () {
     "use strict";
     var queue, result;
-    queue = breadth.getQueue();
+    queue = genericSearch.getQueue();
     result = (queue.length > 0) ? queue.pop() : undefined;
-    breadth.setQueue(queue);
+    genericSearch.setQueue(queue);
     return result;
 };
-
 
 
 
