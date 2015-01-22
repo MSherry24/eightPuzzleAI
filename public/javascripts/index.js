@@ -157,6 +157,9 @@ var postToRunRoute = function () {
             var runInfo = "Run # " + runNumber + " results:"
                             + "<br>";
             var results = JSON.parse(data);
+            if (results.error !== "") {
+                runInfo += results.error + '<br>';
+            } else {
                 runInfo += "Input: " + makeInputPretty(results.input)
                 + " -- Algorithm: " + results.algorithm
                 + "<br>"
@@ -170,15 +173,10 @@ var postToRunRoute = function () {
                 + "<br>"
                 + "Total Running Time: " + results.runTime + " seconds"
                 + "<br>";
-            if (results.error === "" || results.error === undefined) {
                 states = results.solutionPath.reverse();
                 currentState = states.length - 1;
                 showFirstState();
                 printSolutionSteps();
-            } else {
-                runInfo += 'Error during analysis.  Error message - '
-                        + results.error
-                        + '<br>';
             }
             runInfo += '<br>';
             $("#output").prepend(runInfo);
@@ -234,7 +232,7 @@ var printSolutionSteps = function() {
     states.forEach(function(step) {
         steps += step.whatChild;
         steps += ' ';
-    })
+    });
     $('#outputTrace').html(steps);
 };
 

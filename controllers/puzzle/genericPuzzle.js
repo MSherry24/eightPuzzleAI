@@ -50,6 +50,7 @@ exports.run = function (req) {
             res.error = 'No solution found';
             res.solutionPath = [];
         } else {
+            res.error = "";
             res.solutionPath = getSolutionPath(puzzleInfo.goal, puzzleOut.solutionTree);
             res.nodesCreated = puzzleOut.nodesCreated;
             res.nodesVisited = puzzleOut.nodesVisited;
