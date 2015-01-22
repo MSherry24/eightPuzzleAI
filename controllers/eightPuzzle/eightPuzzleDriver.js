@@ -141,7 +141,7 @@ exports.run = function (puzzleInfo) {
     if (puzzleInfo.algorithm === 'Greedy' || puzzleInfo.algorithm === 'A* Manhattan') {
         heuristicScore = h2.evaluate(puzzleInfo.input);
         heuristic = h2;
-    } else if (puzzleInfo.algorith === 'A* Tiles') {
+    } else if (puzzleInfo.algorithm === 'A* Tiles') {
         heuristicScore = h1.evaluate(puzzleInfo.input);
         heuristic = h1;
     } else {

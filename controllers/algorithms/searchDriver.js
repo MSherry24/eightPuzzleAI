@@ -116,6 +116,56 @@ var runIterativeDeepening = function (puzzleInfo, puzzleFunctions, solutionTree,
     return {solutionTree: solutionTree, nodesCreated: nodesCreatedTally, nodesVisited: nodesVisitedTally};
 };
 
+var runHeuristicSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search) {
+    "use strict";
+    var currentKey, nextNodes, currentDepth, nodesCreated, nodesVisited, bestSolutionDepth;
+    currentKey = puzzleInfo.input;
+    currentDepth = 0;
+    nodesCreated = 0;
+    nodesVisited = 0;
+    bestSolutionDepth = Infinity;
+    while (currentKey !== undefined && bestSolutionDepth > solutionTree[currentKey].depth) {
+        /*
+         * The successorFunction returns an array of the next possible nodes.  An anonymous function is
+         * then mapped to each node in the array.
+         */
+        console.log('f(n) = ' + (solutionTree[currentKey].hnScore + solutionTree[currentKey].gnScore)
+                        + ' g(n) = ' + solutionTree[currentKey].gnScore + ' h(n) = ' + solutionTree[currentKey].hnScore);
+        nextNodes = puzzleFunctions.successorFunction(currentKey, solutionTree);
+        nextNodes.map(function (node) {
+            // If the key is an empty string, the anonymous function determined that it is invalid for some reason
+            if (node.key !== '') {
+                if (solutionTree[node.key] === undefined || solutionTree[node.key].depth > (currentDepth + 1)) {
+                    // Add the node to the queue
+                    solutionTree = puzzleFunctions.addToSolutionTree(node, currentKey, solutionTree, puzzleFunctions.evaluateHeuristic);
+                    search.addNode(node.key);
+                    nodesCreated++;
+                }
+            }
+        });
+        nodesVisited++;
+        currentKey = search.getNextNode(solutionTree);
+        currentDepth = solutionTree[currentKey] === undefined ? currentDepth : solutionTree[currentKey].depth;
+        if (currentKey === puzzleInfo.goal) {
+            bestSolutionDepth = currentDepth < bestSolutionDepth ? currentDepth : bestSolutionDepth;
+            console.log('solution found: bestSolutionDepth = ' + bestSolutionDepth);
+        }
+    }
+    // If the goal state was found, return the solution tree and the information about nodes created/visited
+    if (bestSolutionDepth !== Infinity) {
+        return {
+            solutionTree: solutionTree,
+            nodesCreated: nodesCreated,
+            nodesVisited: nodesVisited
+        };
+    }
+    return {
+        solutionTree: undefined,
+        nodesCreated: nodesCreated,
+        nodesVisited: nodesVisited
+    };
+};
+
 exports.run = function (puzzleInfo, puzzleFunctions) {
     "use strict";
     var solutionTree, search, results, solution;
@@ -132,8 +182,10 @@ exports.run = function (puzzleInfo, puzzleFunctions) {
     // Run search
     if (puzzleInfo.algorithm === 'Iterative') {
         results = runIterativeDeepening(puzzleInfo, puzzleFunctions, solutionTree, search);
+    } else if (puzzleInfo.algorithm === 'Greedy' || puzzleInfo.algorithm === 'A* Tiles' || puzzleInfo.algorithm === 'A* Manhattan') {
+        results = runHeuristicSearch(puzzleInfo, puzzleFunctions, solutionTree, search);
     } else {
-        results =  runSearch(puzzleInfo, puzzleFunctions, solutionTree, search, '');
+        results = runSearch(puzzleInfo, puzzleFunctions, solutionTree, search, '');
     }
     // return results
     solution.solutionTree = results.solutionTree;
