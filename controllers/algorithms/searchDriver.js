@@ -1,6 +1,7 @@
 var breadth = require('./breadthFirst');
 var depth = require('./depthFirst');
 var greedy = require('./greedyBestFirst');
+var aStar = require('./aStar');
 
 var getSearch = function (algorithm) {
     "use strict";
@@ -13,6 +14,9 @@ var getSearch = function (algorithm) {
     }
     if (algorithm === 'Greedy') {
         return greedy;
+    }
+    if (algorithm === 'A* Tiles' || algorithm === 'A* Manhattan') {
+        return aStar;
     }
 };
 
