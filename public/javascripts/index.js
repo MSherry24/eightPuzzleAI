@@ -214,7 +214,16 @@ var setAlgorithmText = function() {
             $('#AlgorithmName').html('Depth First Search');
             break;
         case 'Iterative':
-            $('#AlgorithmName').html('Iterative Depth First Search');
+            $('#AlgorithmName').html('Iterative Deepening Search');
+            break;
+        case 'Greedy':
+            $('#AlgorithmName').html('Greedy Best-First Search');
+            break;
+        case 'A* Tiles':
+            $('#AlgorithmName').html('A* with h(n) = Number of Tiles in Correct Place');
+            break;
+        case 'A* Manhattan':
+            $('#AlgorithmName').html('A* with h(n) = Sum of Manhattan Distances for all Tiles');
             break;
     }
 };

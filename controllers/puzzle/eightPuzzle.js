@@ -35,7 +35,9 @@ var addToSolutionTree = function (newNodeObject, currentKey, solutionTree) {
         parent: currentKey,
         zeroIndex: newNodeObject.zeroIndex,
         whatChildIsThis: newNodeObject.whatChildIsThis,
-        depth: ''
+        depth: '',
+        h1Score: '',    //h1 = misplacedTiles
+        h2Score: ''     //h2 = manhattanDistance
     };
     //console.log('key depth = ' + solutionTree[newNodeObject.key].depth);
     return solutionTree;
@@ -125,23 +127,26 @@ var successorFunction = function (currentKey, solutionTree) {
     return nextNodes;
 };
 
-exports.run = function (input, goal, algorithm) {
+exports.run = function (puzzleInfo) {
     "use strict";
-    var results, rootNode;
+    var results, puzzleFunctions;
     //console.log('eightPuzzle.run');
     // create root Node
-    rootNode = {
+    puzzleFunctions = {
+        addToSolutionTree: addToSolutionTree,
+        successorFunction: successorFunction
+    };
+    puzzleInfo.rootNode = {
         upChild: '',
         leftChild: '',
         downChild: '',
         rightChild: '',
         parent: 'root',
-        zeroIndex: getFirstZeroIndex(input),
+        zeroIndex: getFirstZeroIndex(puzzleInfo.input),
         whatChildIsThis: 'start',
         depth: 0
     };
-    results = search.run(input, goal, algorithm, rootNode,
-                        addToSolutionTree, successorFunction);
+    results = search.run(puzzleInfo, puzzleFunctions);
     return results;
 };
 

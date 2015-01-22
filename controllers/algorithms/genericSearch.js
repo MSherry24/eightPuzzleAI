@@ -8,6 +8,7 @@
  */
 var breadth = require('./breadthFirst');
 var depth = require('./depthFirst');
+var greedy = require('./greedyBestFirst');
 
 var getSearch = function (algorithm) {
     "use strict";
@@ -18,25 +19,27 @@ var getSearch = function (algorithm) {
     if (algorithm === 'Depth' || algorithm === 'Iterative') {
         return depth;
     }
+    if (algorithm === 'Greedy') {
+        return greedy;
+    }
 };
 
-var runSearch = function (input, goal, solutionTree,
-                         addToSolutionTree, successorFunction,
-                         nodesVisited, nodesCreated,
-                         search, maxDepth) {
+var runSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search, maxDepth) {
         "use strict";
-        var currentKey, nextNodes, currentDepth, maxDepthReached, isNotIterativeDeepening;
+        var currentKey, nextNodes, currentDepth, nodesCreated, nodesVisited, maxDepthReached, isNotIterativeDeepening;
         isNotIterativeDeepening = maxDepth === '';
         maxDepthReached = maxDepth === '';
-        currentKey = input;
+        currentKey = puzzleInfo.input;
         currentDepth = 0;
-        while (currentKey !== goal && currentKey !== undefined) {
+        nodesCreated = 0;
+        nodesVisited = 0;
+        while (currentKey !== puzzleInfo.goal && currentKey !== undefined) {
             /*
              *  The first thing to check is if the current key is the goal, and if it is, return it.
              *  Next, check to see if the currentKey is undefined.  This is a signal that the queue is empty and
              *  no solution was found.  In which case, the while loop should end.
              */
-            nextNodes = successorFunction(currentKey, solutionTree);
+            nextNodes = puzzleFunctions.successorFunction(currentKey, solutionTree);
             /*
              * The successorFunction returns an array of the next possible nodes.  An anonymous function is
              * then mapped to each node in the array.
@@ -48,10 +51,10 @@ var runSearch = function (input, goal, solutionTree,
                         && (solutionTree[node.key] === undefined
                         // If the key is already in the tree, only continue if this is an iterative deepening
                         // search and the depth of the current node is less than when it was examined previously
-                        || (isNotIterativeDeepening && solutionTree[node.key].depth > currentDepth))) {
+                        || (!isNotIterativeDeepening && solutionTree[node.key].depth > currentDepth))) {
                     // If all of the previous checks passed, add the node to the solution tree hash map and
                     // increase its depth by one (compared to its parent node)
-                    solutionTree = addToSolutionTree(node, currentKey, solutionTree);
+                    solutionTree = puzzleFunctions.addToSolutionTree(node, currentKey, solutionTree);
                     solutionTree[node.key].depth = solutionTree[currentKey].depth + 1;
                     nodesCreated++;
                     // If this is not an iterative deepening search, add the node to the queue
@@ -78,69 +81,60 @@ var runSearch = function (input, goal, solutionTree,
         // nodes to examine before it reached the maxDepth, so all reachable states have been examined.
         // If all possible states have been examined and no solution is found, undefined is returned.
         // Otherwise, the solutionTree is returned.
-        if (currentKey === goal) { return {solutionTree: solutionTree, nodesCreated: nodesCreated, nodesVisited: nodesVisited}; }
+        if (currentKey === puzzleInfo.goal) { return {solutionTree: solutionTree,
+                                                        nodesCreated: nodesCreated,
+                                                        nodesVisited: nodesVisited}; }
         if (search.isEmpty() && maxDepthReached === true) { return undefined; }
-        return {solutionTree: false, nodesCreated: nodesCreated, nodesVisited: nodesVisited};
+        return {solutionTree: false,
+                nodesCreated: nodesCreated,
+                nodesVisited: nodesVisited};
     };
 
-var runIterativeDeepening = function (input, goal, solutionTree,
-                                     addToSolutionTree, successorFunction,
-                                     rootNode, search) {
+var runIterativeDeepening = function (puzzleInfo, puzzleFunctions, solutionTree, search) {
         "use strict";
-        var results, depth, nodesVistitedTally, nodesCreatedTally;
-        nodesVistitedTally = 0;
+        var results, depth, nodesVisitedTally, nodesCreatedTally;
+        nodesVisitedTally = 0;
         nodesCreatedTally = 0;
-        results = {solutionTree: false, nodesCreated: nodesCreatedTally, nodesVisited: nodesVistitedTally};
+        results = {solutionTree: false, nodesCreated: nodesCreatedTally, nodesVisited: nodesVisitedTally};
         depth = 0;
         while (results.solutionTree === false) {
             depth++;
+            console.log('depth = ' + depth);
             solutionTree = {};
-            solutionTree[input] = rootNode;
-            results = runSearch(input, goal, solutionTree,
-                                 addToSolutionTree, successorFunction,
-                                 nodesVistitedTally, nodesCreatedTally,
-                                 search, depth);
+            solutionTree[puzzleInfo.input] = puzzleInfo.rootNode;
+            results = runSearch(puzzleInfo, puzzleFunctions, solutionTree, search, depth);
             nodesCreatedTally += results.nodesCreated;
-            nodesVistitedTally += results.nodesVisited;
-            //console.log('depth = ' + depth + ' nodesCreated = ' + nodesCreatedTally + ' nodesVisited = ' + nodesVistitedTally);
+            nodesVisitedTally += results.nodesVisited;
         }
-        return {solutionTree: solutionTree, nodesCreated: nodesCreatedTally, nodesVisited: nodesVistitedTally};
+        return {solutionTree: solutionTree, nodesCreated: nodesCreatedTally, nodesVisited: nodesVisitedTally};
     };
 
 // Returns solution Tree
-exports.run = function (input, goal, algorithm, rootNode,
-                        addToSolutionTree, successorFunction) {
+exports.run = function (puzzleInfo, puzzleFunctions) {
     "use strict";
-    var solutionTree, search, results, nodesVisited, nodesCreated, solution;
+    var solutionTree, search, results, solution;
     console.log('genericSearch.run');
     // initialize variables
-    nodesCreated = 0;
-    nodesVisited = 0;
     solutionTree = {};
     results = {};
     solution = {};
-    solutionTree[input] = rootNode;
+    solutionTree[puzzleInfo.input] = puzzleInfo.rootNode;
     // Find correct search object
-    search = getSearch(algorithm);
+    search = getSearch(puzzleInfo.algorithm);
     // clear out anything left over in the queue from previous runs
     search.clearQueue();
     // Run search
-    if (algorithm === 'Breadth' || algorithm === 'Depth') {
-        results =  runSearch(input, goal, solutionTree,
-            addToSolutionTree, successorFunction,
-            nodesVisited, nodesCreated,
-            search, '');
+    if (puzzleInfo.algorithm === 'Breadth' || puzzleInfo.algorithm === 'Depth') {
+        results =  runSearch(puzzleInfo, puzzleFunctions, solutionTree, search, '');
     }
-    if (algorithm === 'Iterative') {
-        results = runIterativeDeepening(input, goal, solutionTree,
-            addToSolutionTree, successorFunction,
-            rootNode, search);
+    if (puzzleInfo.algorithm === 'Iterative') {
+        results = runIterativeDeepening(puzzleInfo, puzzleFunctions, solutionTree, search);
     }
     // return results
     solution.solutionTree = results.solutionTree;
     solution.nodesVisited = results.nodesVisited;
     solution.nodesCreated = results.nodesCreated;
-    solution.queueMax = breadth.getMaxLength();
+    solution.queueMax = search.getMaxLength();
     console.log('returning results');
     return solution;
 };
