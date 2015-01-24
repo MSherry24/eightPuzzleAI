@@ -1,3 +1,10 @@
+/*
+ *=======================================================================
+ * Breadth First Search
+ * This library contains all the functions and objects required to run a BFS.
+ * They are all identical to the functions in genericSearch
+ *=======================================================================
+ */
 var genericSearch = require('./genericSearch');
 
 exports.getMaxLength = genericSearch.getMaxLength;

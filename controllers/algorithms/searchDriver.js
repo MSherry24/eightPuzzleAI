@@ -3,9 +3,17 @@ var depth = require('./depthFirst');
 var greedy = require('./greedyBestFirst');
 var aStar = require('./aStar');
 
+/*
+ *=======================================================================
+ * getSearch()
+ * Input: algortihm (String) - Passed in by the UI, represents the algorithm chosen
+ * Output: Object - An object containing all of the search functions required
+ *                  to run the chosen algorith.  These libraries are found
+ *                  in the controllers/algorithms folder.
+ *=======================================================================
+ */
 var getSearch = function (algorithm) {
     "use strict";
-    console.log('getSearch');
     if (algorithm === 'Breadth') {
         return breadth;
     }
@@ -20,11 +28,44 @@ var getSearch = function (algorithm) {
     }
 };
 
+/*
+ *=======================================================================
+ * runSearch()
+ * Input:
+ * puzzleInfo (object) -
+ *      Fields {
+ *          input (String): Passed in by the UI, a stringified JSON object representing a single puzzle state
+ *          goal (String: Passed in by the UI, a stringified JSON object representing the goal state
+ *      }
+ * puzzleFunctions (Object) -
+ *     Fields {
+ *          successorFunction (Function) - Takes a key and the solutionTree as an input and returns an array
+ *                                         containing all of the child node objects.
+ *          addToSolutionTree (Function) - Takes a key, a node, the solution tree, and a heuristic function as an input
+ *                                         returns the solution tree with the new key added in.
+ *          evaluateHeuristic (Function) - A function containing a method evaluate() that will calculate the heuristic score
+ *                                         of a key
+ *    }
+ * solutionTree (Object) - An object that is essentially a hash map where the key is a stringified representation of a puzzle state
+ *                         and the value is an object containing all relevant data about that state (parent, children, heuristic scores, etc.)
+ *                         (see the comments in eightPuzzle about the structure of a node.
+ * search (Object) - A library of functions used to run a particular search algorithm. See getSearch() and the search algorithm files
+ *                   for more detailed information.
+ * maxDepth (Number/String) - If this value is a number, an iterative deepening search is being run.  Otherwise it will be
+ *                            an empty string.  If it is a number, runSearch will not examine any nodes with a depth greater
+ *                            than maxDepth
+ * Output: Object - If a solution is found, the output will be the solution tree in its final state.  If no solution is found
+ *                  iterative deepening is being run, and the max depth for that iteration was reached, false will be returned
+ *                  as a flag to runIterativeDeepening signifying that another iteration can be run.  Otherwise, undefined is
+ *                  returned indicating that no solution is possible for this particular input.
+ *=======================================================================
+ */
 var runSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search, maxDepth) {
     "use strict";
-    var currentKey, nextNodes, currentDepth, maxDepthReached, isNotIterativeDeepening;
+    var currentKey, nextNodes, currentDepth, maxDepthNotReached, isIterativeDeepening, isNotIterativeDeepening;
     isNotIterativeDeepening = maxDepth === '';
-    maxDepthReached = false;
+    isIterativeDeepening = !isNotIterativeDeepening;
+    maxDepthNotReached = true;
     currentKey = puzzleInfo.input;
     currentDepth = 0;
     /*
@@ -59,8 +100,8 @@ var runSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search, max
         // If the current depth is equal to the max depth, set the maxDepthReached flag to true
         // This flag is used after the loop ends to determine if another iteration of the iterative
         // deepening algorithm should be run.
-        if (!isNotIterativeDeepening && !maxDepthReached && currentDepth === maxDepth) {
-            maxDepthReached = true;
+        if (isIterativeDeepening && maxDepthNotReached && currentDepth === maxDepth) {
+            maxDepthNotReached = false;
         }
         // Get the next node from the queue
         currentKey = search.getNextNode(solutionTree);
@@ -68,15 +109,42 @@ var runSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search, max
     }
     // If the goal state was found, return the solution tree and the information about nodes created/visited
     if (currentKey === puzzleInfo.goal) { return solutionTree; }
-    // If max depth is not reached before the queue empties, maxDepthReached will still be false.  This shows that
-    // all reachable states were checked before the max depth was reached, so another round of iterative deepending
-    // will also not find a solution.  Therefore, no solution is possible.
-    if (search.isEmpty() && maxDepthReached === false) { return undefined; }
+    // If max depth is not reached before the queue empties all reachable states were checked before
+    // the max depth was reached, so another round of iterative deepening will also not find a solution.
+    // Therefore, no solution is possible.
+    if (search.isEmpty() && maxDepthNotReached) { return undefined; }
     // Otherwise, another round of iterative deepening is required.  False is returned instead of a solution tree
     // as a signal to runIterativeDeepening that it should run another iteration.
     return false;
 };
 
+/*
+ *=======================================================================
+ * runIterativeDeepening()
+ * Input:
+ * puzzleInfo (object) -
+ *      Fields {
+ *          input (String): Passed in by the UI, a stringified JSON object representing a single puzzle state
+ *          goal (String: Passed in by the UI, a stringified JSON object representing the goal state
+ *      }
+ * puzzleFunctions (Object) -
+ *     Fields {
+ *          successorFunction (Function) - Takes a key and the solutionTree as an input and returns an array
+ *                                         containing all of the child node objects.
+ *          addToSolutionTree (Function) - Takes a key, a node, the solution tree, and a heuristic function as an input
+ *                                         returns the solution tree with the new key added in.
+ *          evaluateHeuristic (Function) - A function containing a method evaluate() that will calculate the heuristic score
+ *                                         of a key
+ *    }
+ * solutionTree (Object) - An object that is essentially a hash map where the key is a stringified representation of a puzzle state
+ *                         and the value is an object containing all relevant data about that state (parent, children, heuristic scores, etc.)
+ *                         (see the comments in eightPuzzle about the structure of a node.
+ * search (Object) - A library of functions used to run a particular search algorithm. See getSearch() and the search algorithm files
+ *                   for more detailed information.
+ * Output: Object - Simply passes along the results of runSearch.  It will be the final state of the solution tree if a
+ *                  solution is found, otherwise it will be undefined.
+ *=======================================================================
+ */
 var runIterativeDeepening = function (puzzleInfo, puzzleFunctions, solutionTree, search) {
     "use strict";
     var results, depth;
@@ -92,6 +160,32 @@ var runIterativeDeepening = function (puzzleInfo, puzzleFunctions, solutionTree,
     return results;
 };
 
+/*
+ *=======================================================================
+ * runHeuristicSearch()
+ * Input:
+ * puzzleInfo (object) -
+ *      Fields {
+ *          input (String): Passed in by the UI, a stringified JSON object representing a single puzzle state
+ *          goal (String: Passed in by the UI, a stringified JSON object representing the goal state
+ *      }
+ * puzzleFunctions (Object) -
+ *     Fields {
+ *          successorFunction (Function) - Takes a key and the solutionTree as an input and returns an array
+ *                                         containing all of the child node objects.
+ *          addToSolutionTree (Function) - Takes a key, a node, the solution tree, and a heuristic function as an input
+ *                                         returns the solution tree with the new key added in.
+ *          evaluateHeuristic (Function) - A function containing a method evaluate() that will calculate the heuristic score
+ *                                         of a key
+ *    }
+ * solutionTree (Object) - An object that is essentially a hash map where the key is a stringified representation of a puzzle state
+ *                         and the value is an object containing all relevant data about that state (parent, children, heuristic scores, etc.)
+ *                         (see the comments in eightPuzzle about the structure of a node.
+ * search (Object) - A library of functions used to run a particular search algorithm. See getSearch() and the search algorithm files
+ *                   for more detailed information.
+ * Output: Object - Will be the final state of the solution tree if a solution is found, otherwise it will be undefined.
+ *=======================================================================
+ */
 var runHeuristicSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search) {
     "use strict";
     var currentKey, nextNodes, currentDepth, bestSolutionDepth;
@@ -116,11 +210,13 @@ var runHeuristicSearch = function (puzzleInfo, puzzleFunctions, solutionTree, se
                 }
             }
         });
+        // Get the next node from the search algorithm library and update the current depth.
         currentKey = search.getNextNode(solutionTree);
         currentDepth = solutionTree[currentKey] === undefined ? currentDepth : solutionTree[currentKey].depth;
+        // if a solution state is found, save its current depth and then continue running the algorithm to see if
+        // a more efficient solution can be found.
         if (currentKey === puzzleInfo.goal) {
             bestSolutionDepth = currentDepth < bestSolutionDepth ? currentDepth : bestSolutionDepth;
-            console.log('solution found: bestSolutionDepth = ' + bestSolutionDepth);
         }
     }
     // If the goal state was found, return the solution tree and the information about nodes created/visited
@@ -130,6 +226,27 @@ var runHeuristicSearch = function (puzzleInfo, puzzleFunctions, solutionTree, se
     return undefined;
 };
 
+/*
+ *=======================================================================
+ * runIterativeDeepening()
+ * Input:
+ * puzzleInfo (object) -
+ *      Fields {
+ *          input (String): Passed in by the UI, a stringified JSON object representing a single puzzle state
+ *          goal (String: Passed in by the UI, a stringified JSON object representing the goal state
+ *      }
+ * puzzleFunctions (Object) -
+ *     Fields {
+ *          successorFunction (Function) - Takes a key and the solutionTree as an input and returns an array
+ *                                         containing all of the child node objects.
+ *          addToSolutionTree (Function) - Takes a key, a node, the solution tree, and a heuristic function as an input
+ *                                         returns the solution tree with the new key added in.
+ *          evaluateHeuristic (Function) - A function containing a method evaluate() that will calculate the heuristic score
+ *                                         of a key
+ *    }
+ * Output: Object - Will be the final state of the solution tree if a solution is found, otherwise it will be undefined.
+ *=======================================================================
+ */
 exports.run = function (puzzleInfo, puzzleFunctions) {
     "use strict";
     var solutionTree, search, results, solution;
@@ -139,7 +256,7 @@ exports.run = function (puzzleInfo, puzzleFunctions) {
     results = {};
     solution = {};
     solutionTree[puzzleInfo.input] = puzzleInfo.rootNode;
-    // Find correct search object
+    // Find correct search algorithm library
     search = getSearch(puzzleInfo.algorithm);
     // clear out anything left over in the queue from previous runs
     search.clearQueue();
@@ -153,8 +270,10 @@ exports.run = function (puzzleInfo, puzzleFunctions) {
     }
     // return results
     solution.solutionTree = results;
+    // if the results of the search are undefined, no solution is possible.  Add a message to solution.error that can
+    // be displayed to the user.
     solution.error = results === undefined ? "No Solution Found" : "";
+    // Get the maximum length of the queue during the search so that it can be returned to the user.
     solution.queueMax = search.getMaxLength();
-    console.log('returning results');
     return solution;
 };
