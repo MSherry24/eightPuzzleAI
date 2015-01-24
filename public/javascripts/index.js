@@ -153,7 +153,6 @@ var postToRunRoute = function () {
         function (data) {
             // "data" is the result returned by the server.  Results found in "data" are parsed and displayed
             // at the bottom of the UI window
-
             var runInfo = "Run # " + runNumber + " results:"
                             + "<br>";
             var results = JSON.parse(data);
@@ -163,15 +162,11 @@ var postToRunRoute = function () {
                 runInfo += "Input: " + makeInputPretty(results.input)
                 + " -- Algorithm: " + results.algorithm
                 + "<br>"
-                + "Nodes Created: " + results.nodesCreated
-                + "<br>"
-                + "Nodes Visited: " + results.nodesVisited
-                + "<br>"
-                + "Max Queue Length: " + results.queueMax
-                + "<br>"
                 + "Steps in Solution: " + results.solutionPath.length
                 + "<br>"
                 + "Total Running Time: " + results.runTime + " seconds"
+                + "<br>"
+                + "Max Queue Length: " + results.queueMax
                 + "<br>";
                 states = results.solutionPath.reverse();
                 currentState = states.length - 1;
