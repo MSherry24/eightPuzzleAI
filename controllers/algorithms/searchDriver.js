@@ -36,6 +36,7 @@ var getSearch = function (algorithm) {
  *      Fields {
  *          input (String): Passed in by the UI, a stringified JSON object representing a single puzzle state
  *          goal (String: Passed in by the UI, a stringified JSON object representing the goal state
+ *          rootNode (Object): The node representing the user's input
  *      }
  * puzzleFunctions (Object) -
  *     Fields {

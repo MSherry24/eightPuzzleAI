@@ -1,3 +1,10 @@
+/*
+ *=======================================================================
+ * misplacedTiles
+ * This library contains one function, evaluate() which calculates the total number
+ * of tiles which are not in their goal position, and returns the total.
+ *=======================================================================
+ */
 exports.evaluate = function (key) {
     var keyObject, score;
     score = 0;
