@@ -87,7 +87,7 @@ var runSearch = function (puzzleInfo, puzzleFunctions, solutionTree, search, max
                     && (solutionTree[node.key] === undefined
                     // If the key is already in the tree, only continue if this is an iterative deepening
                     // search and the depth of the current node is less than when it was examined previously
-                    || (!isNotIterativeDeepening && solutionTree[node.key].depth > currentDepth))) {
+                    || (isIterativeDeepening && solutionTree[node.key].depth > currentDepth))) {
                 // If all of the previous checks passed, add the node to the solution tree hash map
                 solutionTree = puzzleFunctions.addToSolutionTree(node, currentKey, solutionTree, puzzleFunctions.evaluateHeuristic);
                 // If this is not an iterative deepening search, add the node to the queue
@@ -229,7 +229,7 @@ var runHeuristicSearch = function (puzzleInfo, puzzleFunctions, solutionTree, se
 
 /*
  *=======================================================================
- * runIterativeDeepening()
+ * run()
  * Input:
  * puzzleInfo (object) -
  *      Fields {
@@ -251,7 +251,6 @@ var runHeuristicSearch = function (puzzleInfo, puzzleFunctions, solutionTree, se
 exports.run = function (puzzleInfo, puzzleFunctions) {
     "use strict";
     var solutionTree, search, results, solution;
-    console.log('genericSearch.run');
     // initialize variables
     solutionTree = {};
     results = {};
