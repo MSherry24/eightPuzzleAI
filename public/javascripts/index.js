@@ -1,8 +1,28 @@
-/**
- * Created by mikesherry24 on 1/9/15.
+/*
+ *=======================================================================
+ * index
+ * This file contains all of the client side javascript functions used by
+ * the browser.
+ *=======================================================================
  */
+
+// States is an array containing all of the required states, in order from
+// the starting state to the goal.
+// Current state is the index of states that the user is currently looking at
+// Run number keeps track of how many puzzles the user has submitted to the server
 var states, currentState, runNumber;
 
+/*
+ *=======================================================================
+ * setState
+ * Input: None
+ * Output: None
+ * Actions: When the user traverses through the solution steps with the
+ *          UI, this function is called, it gets the JSON object representing
+ *          the next state, and sets the page elements to the corresponding
+ *          values.
+ *=======================================================================
+ */
 var setState = function () {
     "use strict";
     // Sets the numbers that appear in the "State" section of the index page
@@ -19,6 +39,17 @@ var setState = function () {
     }
 };
 
+/*
+ *=======================================================================
+ * setInput
+ * Input: None
+ * Output: None
+ * Actions: When the user selects "Easy", "Medium" or "Hard" for the input,
+ *          the custom input fields are automatically set to the predetermined
+ *          values.  If the user selects "Custom" the fields are shown and
+ *          the user may edit them manually.
+ *=======================================================================
+ */
 var setInput = function () {
     "use strict";
     // Sets the numbers that appear under the Input section of the index page
@@ -66,6 +97,14 @@ var setInput = function () {
     }
 };
 
+/*
+ *=======================================================================
+ * showFirstState
+ * Input: None
+ * Output: None
+ * Actions: Sets the index of the states array to 0, calls setState.
+ *=======================================================================
+ */
 var showFirstState = function () {
     "use strict";
     // Used by the State portion of the page to show the initial configuration in a puzzle solution.
@@ -73,6 +112,14 @@ var showFirstState = function () {
     setState();
 };
 
+/*
+ *=======================================================================
+ * showFinalState
+ * Input: None
+ * Output: None
+ * Actions: Sets the index of the states array the length of the array -1, calls setState.
+ *=======================================================================
+ */
 var showFinalState = function () {
     "use strict";
     // Used by the State portion of the page to show the final configuration in a puzzle solution.
@@ -80,6 +127,14 @@ var showFinalState = function () {
     setState();
 };
 
+/*
+ *=======================================================================
+ * showPreviousState
+ * Input: None
+ * Output: None
+ * Actions: Decrements the index of the states array, calls setState.
+ *=======================================================================
+ */
 var showPreviousState = function () {
     "use strict";
     // Used by the State portion of the page to show the previous configuration in a puzzle solution.
@@ -89,6 +144,14 @@ var showPreviousState = function () {
     }
 };
 
+/*
+ *=======================================================================
+ * showNextState
+ * Input: None
+ * Output: None
+ * Actions: Increments the index of the states array, calls setState.
+ *=======================================================================
+ */
 var showNextState = function () {
     "use strict";
     // Used by the State portion of the page to show the next configuration in a puzzle solution.
@@ -98,12 +161,28 @@ var showNextState = function () {
     }
 };
 
+/*
+ *=======================================================================
+ * postToRunRoute
+ * Input: None
+ * Output: None
+ * Actions: Called when the user clicks the "solve puzzle" button.  It gets
+ *          the input values that the user selected and saves them as a json object.
+ *          It also gets the value of the algorithm button the user selected and creates
+ *          a json object representing the goal state.  It them makes a post call to the
+ *          server and passes the input, algorithm, and goal as the body of the post.
+ *
+ *          The server returns an array with the solution steps and information about the
+ *          running time, maximum queue length, and number of steps in the solution.  This
+ *          information is displayed in the UI.
+ *=======================================================================
+ */
 var postToRunRoute = function () {
     "use strict";
     // Called when the user clicks the "Solve Puzzle" button.  This function
     // parses out all of the user's selections, packages them into a JSON object
     // and passes a stringified version of that object to the app server.
-    var algorithmVal, inputVal, goal,
+    var algorithmVal, goal,
         customInput1, customInput2, customInput3,
         customInput4, customInput5, customInput6,
         customInput7, customInput8, customInput9,
@@ -116,7 +195,6 @@ var postToRunRoute = function () {
     $('#loadingContainer').show();
     // Parse out the user's UI selections
     algorithmVal = $('input[name=algorithm]:checked').closest('label').text();
-    //inputVal = $('input[name=options]:checked').closest('label').text();
     customInput1 = $('#customInputBox1').val();
     customInput2 = $('#customInputBox2').val();
     customInput3 = $('#customInputBox3').val();
@@ -126,6 +204,11 @@ var postToRunRoute = function () {
     customInput7 = $('#customInputBox7').val();
     customInput8 = $('#customInputBox8').val();
     customInput9 = $('#customInputBox9').val();
+    // The json object that is used to represent a puzzle state.  Each tile is indexed with the format '_#' where
+    // # represents a particular spot on the board.  The layout of the board indexes is shown below
+    // _1 _2 _3
+    // _4 _5 _6
+    // _7 _8 _9
     customInput = { _1:customInput1.toString(),
                     _2:customInput2.toString(),
                     _3:customInput3.toString(),
@@ -183,6 +266,15 @@ var postToRunRoute = function () {
         });
 };
 
+/*
+ *=======================================================================
+ * makeInputPretty
+ * Input: A json object representing the user's input
+ * Output: (String) - a string of nine numbers
+ * Actions: Formats the user's input board state so that it can be displayed
+ *          in the output window as a single array of numbers
+ *=======================================================================
+ */
 var makeInputPretty = function(input) {
     var prettyInput, range, inputObject;
     prettyInput = '';
@@ -195,6 +287,17 @@ var makeInputPretty = function(input) {
     return prettyInput;
 };
 
+/*
+ *=======================================================================
+ * setAlgorithmText
+ * Input: None
+ * Output: None
+ * Actions: Since the buttons are not big enough to display the entire algorithm
+ *          name inside the button, when the user clicks on a button, the full
+ *          algorithm name is determined based on their selection and displayed
+ *          below the algorithm choosing buttons.
+ *=======================================================================
+ */
 var setAlgorithmText = function() {
     var algorithmVal;
     algorithmVal = $('input[name=algorithm]:checked').closest('label').text();
@@ -221,6 +324,16 @@ var setAlgorithmText = function() {
     }
 };
 
+/*
+ *=======================================================================
+ * printSolutionSteps
+ * Input: None
+ * Output: None
+ * Actions: The states array is parsed to get the steps of the solution. Each
+ *          step is added to a string and the final string is displayed in an
+ *          output well on the UI.
+ *=======================================================================
+ */
 var printSolutionSteps = function() {
     var steps;
     steps = '';
@@ -231,6 +344,16 @@ var printSolutionSteps = function() {
     $('#outputTrace').html(steps);
 };
 
+/*
+ *=======================================================================
+ * ready
+ * Input: None
+ * Output: None
+ * Actions: When the page is loaded, watcher functions are attached to certain
+ *          page elements, page elements are set to their initial values,
+  *          and some global variables are initialized
+ *=======================================================================
+ */
 $(document).ready(function() {
     // Initialize button functions and global variables.
     $('#submitButton').on('click', postToRunRoute);
