@@ -198,8 +198,6 @@ var runHeuristicSearch = function (puzzleInfo, puzzleFunctions, solutionTree, se
          * The successorFunction returns an array of the next possible nodes.  An anonymous function is
          * then mapped to each node in the array.
          */
-        //console.log('f(n) = ' + (solutionTree[currentKey].hnScore + solutionTree[currentKey].gnScore)
-        //                + ' g(n) = ' + solutionTree[currentKey].gnScore + ' h(n) = ' + solutionTree[currentKey].hnScore);
         nextNodes = puzzleFunctions.successorFunction(currentKey, solutionTree);
         nextNodes.map(function (node) {
             // If the key is an empty string, the anonymous function determined that it is invalid for some reason
